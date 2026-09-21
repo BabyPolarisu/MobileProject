@@ -1,6 +1,6 @@
 # UniMarket Flutter (Multi-Platform) 🎓🛍️
 
-แอปพลิเคชันตลาดนัดออนไลน์สำหรับมหาวิทยาลัย พัฒนาด้วย **Flutter** รองรับการทำงานแบบสมบูรณ์บนทุกระบบปฏิบัติการ (**Web, Windows Desktop, Android, iOS, macOS, Linux**) โดยออกแบบระบบและการทำงานเทียบเคียงกับระบบ Django เดิมใน `DssiProject` ครบถ้วน 100%
+แอปพลิเคชันตลาดนัดออนไลน์สำหรับมหาวิทยาลัย พัฒนาด้วย **Flutter** รองรับการทำงานแบบสมบูรณ์บนทุกระบบปฏิบัติการ (**Web, Windows Desktop, Android, iOS, macOS, Linux**)
 
 ---
 
