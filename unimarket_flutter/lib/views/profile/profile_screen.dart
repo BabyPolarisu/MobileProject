@@ -201,6 +201,48 @@ class ProfileScreen extends StatelessWidget {
                           subtitle: 'เพื่อทดสอบฟังก์ชันแอดมินและการอนุมัติ',
                           onTap: () => state.switchUserRole(!user.isAdmin),
                         ),
+                        const Divider(height: 1),
+                        _buildMenuTile(
+                          icon: state.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          title: 'ธีมของระบบ (Theme)',
+                          subtitle: state.isDarkMode ? 'โหมดมืด (Dark Mode)' : 'โหมดสว่าง (Light Mode)',
+                          trailing: Switch(
+                            value: state.isDarkMode,
+                            onChanged: (_) => state.toggleDarkMode(),
+                          ),
+                          onTap: () => state.toggleDarkMode(),
+                        ),
+                        const Divider(height: 1),
+                        _buildMenuTile(
+                          icon: Icons.logout,
+                          title: 'ออกจากระบบ (OIDC Sign Out)',
+                          subtitle: 'ล้างโทเค็นเซสชันและกลับสู่หน้าเข้าสู่ระบบ',
+                          color: AppTheme.danger,
+                          trailing: const Icon(Icons.exit_to_app, color: AppTheme.danger, size: 20),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('ยืนยันออกจากระบบ'),
+                                content: const Text('คุณต้องการออกจากระบบและล้างโทเค็นเซสชัน OIDC หรือไม่?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: const Text('ยกเลิก'),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.danger),
+                                    onPressed: () {
+                                      Navigator.pop(ctx);
+                                      state.logout();
+                                    },
+                                    child: const Text('ออกจากระบบ'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -209,6 +251,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         );
+
       },
     );
   }

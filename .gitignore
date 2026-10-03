@@ -3,3 +3,23 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+*.db
+.env
+.venv/
+env/
+venv/
+media/
+static/staticfiles/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/

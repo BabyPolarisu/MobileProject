@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}หน้าแรก | UniMarket ตลาดนัดมหาวิทยาลัยอุบลราชธานี{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Search Bar (Matches Flutter HomeScreen Search Input) -->
+    <div class="relative max-w-2xl mx-auto">
+        <form action="{% url 'product_list' %}" method="GET">
+            <div class="relative flex items-center bg-white rounded-2xl shadow-sm border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition p-1.5">
+                <span class="pl-4 pr-2 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </span>
+                <input type="text" name="q" id="search-input" 
+                       placeholder="ค้นหาสินค้า เช่น หนังสือเรียน, iPad, เสื้อผ้า..." 
+                       class="flex-1 py-2.5 px-2 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400 font-medium" 
+                       autocomplete="off" 
+                       onkeyup="fetchSuggestions(this.value)">
+                <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm">
+                    ค้นหา
+                </button>
+            </div>
+        </form>
+        <div id="suggestions-box" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 z-40 text-left overflow-hidden divide-y divide-slate-100"></div>
+    </div>
+
+    <!-- Hero Banner (Matches Flutter HomeScreen LinearGradient Hero) -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1E3A8A] via-[#1E40AF] to-[#2563EB] text-white p-8 sm:p-10 shadow-lg shadow-blue-950/20">
+        <!-- Subtle Background Glows -->
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+        <div class="absolute right-32 top-0 w-48 h-48 rounded-full bg-blue-400/10 blur-xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="max-w-xl space-y-3">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-bold text-white tracking-wide border border-white/20">
+                    🎓 ตลาดนัดนักศึกษา มหาวิทยาลัยอุบลราชธานี
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    ส่งต่อของใช้ ราคาประหยัด นัดรับง่ายในมอ
+                </h1>
+                <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
+                    ปลอดภัยด้วยระบบยืนยันตัวตนนักศึกษา ตรวจสอบได้ทุกชิ้น ค้นหาหนังสือ อุปกรณ์การเรียน และสินค้าคุณภาพดีจากเพื่อนๆ
+                </p>
+                <div class="pt-2 flex flex-wrap gap-3">
+                    <a href="{% url 'product_create' %}" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition transform active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        ลงขายสินค้าฟรี
+                    </a>
+                    <a href="{% url 'product_list' %}" class="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold text-sm backdrop-blur-sm border border-white/20 transition">
+                        สำรวจตลาด &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden md:flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 text-center min-w-[200px]">
+                <span class="text-6xl animate-bounce">🛍️</span>
+                <span class="text-xs font-bold text-white/90 mt-2">UniMarket Community</span>
+                <span class="text-[11px] text-blue-200">ซื้อง่าย • ขายคล่อง • ปลอดภัย</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Chips (Matches Flutter HomeScreen ChoiceChips) -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                <span>📂</span>
+                <span>หมวดหมู่สินค้า</span>
+            </h2>
+            <a href="{% url 'product_list' %}" class="text-xs sm:text-sm font-semibold text-primary hover:text-accent transition">
+                ดูทั้งหมด &rarr;
+            </a>
+        </div>
+
+        <div class="flex flex-wrap gap-2.5">
+            <a href="{% url 'product_list' %}" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-primary text-white shadow-xs hover:bg-primary-hover transition flex items-center gap-1.5">
+                <span>🌟</span>
+                <span>ทั้งหมด</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=1" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>📚</span>
+                <span>หนังสือเรียน</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=2" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>💻</span>
+                <span>อิเล็กทรอนิกส์</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=3" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>👕</span>
+                <span>เสื้อผ้าแฟชั่น</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=4" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>👟</span>
+                <span>รองเท้า</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=5" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>💍</span>
+                <span>เครื่องประดับ</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=6" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>🛋️</span>
+                <span>ของใช้ในหอ</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=7" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>📝</span>
+                <span>อุปกรณ์การเรียน</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=8" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>⚽</span>
+                <span>อุปกรณ์กีฬา</span>
+            </a>
+            <a href="{% url 'product_list' %}?category=9" 
+               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-700 hover:bg-blue-50 hover:text-primary hover:border-blue-200 border border-slate-200 shadow-2xs transition flex items-center gap-1.5">
+                <span>📦</span>
+                <span>อื่นๆ</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Product Grid (Matches Flutter HomeScreen Product Grid) -->
+    <div>
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <span>✨</span>
+                    <span>สินค้ามาใหม่ล่าสุด</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">สินค้าที่มีผู้ลงขายและพร้อมนัดรับในมหาวิทยาลัย</p>
+            </div>
+            <a href="{% url 'product_list' %}" class="text-xs sm:text-sm font-semibold text-primary hover:text-accent transition">
+                ดูสินค้าทั้งหมด &rarr;
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {% for product in products %}
+                {% include 'partials/product_card.html' %}
+            {% empty %}
+                <div class="col-span-full py-16 text-center bg-white rounded-3xl border border-dashed border-slate-300">
+                    <span class="text-5xl">📦</span>
+                    <h3 class="text-base font-bold text-slate-700 mt-3">ยังไม่มีสินค้าในขณะนี้</h3>
+                    <p class="text-xs text-slate-400 mt-1">มาร่วมเป็นคนแรกที่ลงขายสินค้าในระบบ UniMarket</p>
+                    <a href="{% url 'product_create' %}" class="mt-4 inline-flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-primary-hover transition">
+                        + ลงขายสินค้าเลย
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function fetchSuggestions(query) {
+        const box = document.getElementById('suggestions-box');
+        if (query.length < 1) { 
+            box.classList.add('hidden'); 
+            box.innerHTML = ''; 
+            return; 
+        }
+        fetch(`/api/search-suggestions/?term=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    box.innerHTML = ''; 
+                    box.classList.remove('hidden');
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-slate-700 text-xs font-medium flex items-center gap-2';
+                        div.innerHTML = `<span>🔍</span><span>${item.name}</span>`;
+                        div.onclick = function() {
+                            document.getElementById('search-input').value = item.name;
+                            box.classList.add('hidden');
+                            window.location.href = `{% url 'product_list' %}?q=${encodeURIComponent(item.name)}`;
+                        };
+                        box.appendChild(div);
+                    });
+                } else { 
+                    box.classList.add('hidden'); 
+                }
+            })
+            .catch(() => box.classList.add('hidden'));
+    }
+    document.addEventListener('click', function(e) {
+        const box = document.getElementById('suggestions-box');
+        const input = document.getElementById('search-input');
+        if (input && box && !input.contains(e.target) && !box.contains(e.target)) { 
+            box.classList.add('hidden'); 
+        }
+    });
+</script>
+{% endblock %}

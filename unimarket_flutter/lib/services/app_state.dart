@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../models/product_model.dart';
 import '../models/chat_model.dart';
@@ -7,10 +8,20 @@ import '../models/report_model.dart';
 import '../models/verification_model.dart';
 import '../models/notification_model.dart';
 import '../core/constants.dart';
+import '../core/auth/oidc_service.dart';
 import 'api_service.dart';
 
 class AppState extends ChangeNotifier {
   final ApiService apiService = ApiService();
+  final OidcService oidcService = OidcService();
+
+  // Authentication & Route Guard State
+  bool isAuthenticated = false;
+  bool isAuthLoading = true;
+
+  // Theme Mode State (Light / Dark)
+  ThemeMode themeMode = ThemeMode.light;
+  bool get isDarkMode => themeMode == ThemeMode.dark;
 
   // Current logged in user
   late UserModel currentUser;
@@ -38,7 +49,80 @@ class AppState extends ChangeNotifier {
 
   AppState() {
     _initSeedData();
+    _initAuthAndTheme();
+    checkBackendConnection();
   }
+
+  Future<void> _initAuthAndTheme() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isDark = prefs.getBool('is_dark_mode') ?? false;
+      themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+
+      final restored = await oidcService.restoreSession();
+      if (restored != null) {
+        currentUser = restored;
+        isAuthenticated = true;
+        apiService.authToken = await oidcService.getAccessToken();
+      }
+    } catch (_) {
+    } finally {
+      isAuthLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> toggleDarkMode() async {
+    themeMode = themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_dark_mode', themeMode == ThemeMode.dark);
+    } catch (_) {}
+  }
+
+  Future<bool> loginWithOidc(String username, String password) async {
+    final user = await oidcService.login(username: username, password: password);
+    if (user != null) {
+      currentUser = user;
+      isAuthenticated = true;
+      apiService.authToken = await oidcService.getAccessToken();
+      await checkBackendConnection();
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> logout() async {
+    await oidcService.logout();
+    isAuthenticated = false;
+    apiService.authToken = null;
+    notifyListeners();
+  }
+
+  Future<void> checkBackendConnection() async {
+    final online = await apiService.checkServerHealth();
+    isConnectedToBackend = online;
+    if (online) {
+      try {
+        await apiService.registerMobileDevice(
+          platform: 'flutter_web',
+          model: 'Web Browser (Port 50000)',
+        );
+        final backendCats = await apiService.fetchCategories();
+        if (backendCats.isNotEmpty) {
+          categories = backendCats;
+        }
+        final backendProducts = await apiService.fetchProducts();
+        if (backendProducts.isNotEmpty) {
+          products = backendProducts;
+        }
+      } catch (_) {}
+    }
+    notifyListeners();
+  }
+
 
   void _initSeedData() {
     // 1. Users
@@ -325,6 +409,9 @@ class AppState extends ChangeNotifier {
         isFavorite: newFav,
         favoritesCount: newCount,
       );
+      if (isConnectedToBackend) {
+        apiService.toggleFavorite(productId, currentUser.id);
+      }
       notifyListeners();
     }
   }
@@ -366,20 +453,45 @@ class AppState extends ChangeNotifier {
       createdAt: DateTime.now(),
     ));
 
+    if (isConnectedToBackend) {
+      apiService.createProduct(
+        name: name,
+        description: description,
+        price: price,
+        condition: condition,
+        categoryId: category.id,
+        sellerId: currentUser.id,
+      );
+    }
+
     notifyListeners();
   }
 
-  void updateProduct(ProductModel updated) {
+  Future<void> updateProduct(ProductModel updated) async {
     final index = products.indexWhere((p) => p.id == updated.id);
     if (index != -1) {
       products[index] = updated;
       notifyListeners();
     }
+    if (isConnectedToBackend) {
+      await apiService.updateProduct(
+        id: updated.id,
+        name: updated.name,
+        description: updated.description,
+        price: updated.price,
+        condition: updated.condition,
+        categoryId: updated.category?.id,
+        status: updated.status,
+      );
+    }
   }
 
-  void deleteProduct(int productId) {
+  Future<void> deleteProduct(int productId) async {
     products.removeWhere((p) => p.id == productId);
     notifyListeners();
+    if (isConnectedToBackend) {
+      await apiService.deleteProduct(productId);
+    }
   }
 
   void markAsSold(int productId) {
@@ -402,6 +514,9 @@ class AppState extends ChangeNotifier {
         link: '/product/$productId',
         createdAt: DateTime.now(),
       ));
+      if (isConnectedToBackend) {
+        apiService.adminProductAction(productId, 'approve');
+      }
       notifyListeners();
     }
   }
@@ -410,6 +525,9 @@ class AppState extends ChangeNotifier {
     final index = products.indexWhere((p) => p.id == productId);
     if (index != -1) {
       products[index] = products[index].copyWith(status: 'rejected');
+      if (isConnectedToBackend) {
+        apiService.adminProductAction(productId, 'reject');
+      }
       notifyListeners();
     }
   }
@@ -418,6 +536,9 @@ class AppState extends ChangeNotifier {
     final index = products.indexWhere((p) => p.id == productId);
     if (index != -1) {
       products[index] = products[index].copyWith(status: 'suspended');
+      if (isConnectedToBackend) {
+        apiService.adminProductAction(productId, 'suspend');
+      }
       notifyListeners();
     }
   }

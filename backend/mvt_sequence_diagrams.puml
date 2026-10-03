@@ -1,0 +1,454 @@
+' ========================================================
+' 1. ระบบสมัครสมาชิก (User Registration)
+' ========================================================
+@startuml 1_User_Registration
+title 1. ระบบสมัครสมาชิก (User Registration)
+hide footbox
+autonumber
+
+actor "ผู้ใช้งาน\n(User)" as User
+participant "Browser" as Browser
+participant "<<View>>\nRegisterView" as View
+participant "<<Form>>\nRegisterForm" as Form
+participant "<<Model>>\nUser" as Model
+database "Database" as DB
+
+User -> Browser: กรอกข้อมูลและกดสมัครสมาชิก
+activate Browser
+
+Browser -> View: POST /register/\n(form_data)
+activate View
+
+View -> Form: RegisterForm(POST)
+activate Form
+
+Form -> Form: is_valid()
+alt [form valid]
+    Form --> View: True
+    View -> Form: save(commit=False)
+    Form --> View: user (unsaved)
+    
+    View -> Model: user.save()
+    activate Model
+    Model -> DB: INSERT auth_user SET ...
+    activate DB
+    DB --> Model: OK
+    deactivate DB
+    Model --> View: OK
+    deactivate Model
+    
+    View --> Browser: redirect('home')\n+ messages.success(...)
+else [form invalid]
+    Form --> View: False
+    deactivate Form
+    View --> Browser: render register.html\n(form with errors)
+end
+deactivate View
+
+Browser --> User: แสดงผลลัพธ์บนหน้าจอ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 2. ระบบยืนยันตัวตน (Identity Verification)
+' ========================================================
+@startuml 2_Identity_Verification
+title 2. ระบบยืนยันตัวตน (Identity Verification)
+hide footbox
+autonumber
+
+actor "ผู้ใช้งาน\n(User)" as User
+participant "Browser" as Browser
+participant "<<View>>\nVerificationView" as View
+participant "<<Form>>\nVerificationForm" as Form
+participant "<<Model>>\nVerification Request" as Model
+database "Database" as DB
+
+User -> Browser: อัปโหลดรูปภาพและกดยืนยัน
+activate Browser
+
+Browser -> View: POST /verify/\n(image_data)
+activate View
+
+View -> Form: VerificationForm(POST, FILES)
+activate Form
+
+Form -> Form: is_valid()
+alt [form valid]
+    Form --> View: True
+    View -> Form: save(commit=False)
+    Form --> View: verification (unsaved)
+    
+    View -> Model: verification.status = 'pending'\nverification.user = request.user\nverification.save()
+    activate Model
+    Model -> DB: INSERT verification SET ...
+    activate DB
+    DB --> Model: OK
+    deactivate DB
+    Model --> View: OK
+    deactivate Model
+    
+    View --> Browser: redirect('profile')\n+ messages.info('รอการอนุมัติ')
+else [form invalid]
+    Form --> View: False
+    deactivate Form
+    View --> Browser: render verify.html\n(form with errors)
+end
+deactivate View
+
+Browser --> User: แสดงสถานะการรออนุมัติ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 3. ระบบแอดมินอนุมัติผู้ใช้ (Admin Approve Users)
+' ========================================================
+@startuml 3_Admin_Approve_Users
+title 3. ระบบแอดมินอนุมัติผู้ใช้ (Admin Approve Users)
+hide footbox
+autonumber
+
+actor "ผู้ดูแลระบบ\n(Admin)" as Admin
+participant "Browser" as Browser
+participant "<<View>>\nAdminApproveUserView" as View
+participant "<<Model>>\nUser" as UserModel
+participant "<<Model>>\nNotification" as NotiModel
+database "Database" as DB
+
+Admin -> Browser: คลิกอนุมัติผู้ใช้
+activate Browser
+
+Browser -> View: POST /admin/approve_user/<id>/
+activate View
+
+View -> UserModel: objects.get(id=userId)
+activate UserModel
+UserModel -> DB: SELECT * FROM auth_user WHERE id=...
+activate DB
+DB --> UserModel: row
+deactivate DB
+UserModel --> View: user_obj
+deactivate UserModel
+
+View -> UserModel: user_obj.status = 'approved'\nuser_obj.save()
+activate UserModel
+UserModel -> DB: UPDATE auth_user SET status='approved' ...
+activate DB
+DB --> UserModel: OK
+deactivate DB
+UserModel --> View: OK
+deactivate UserModel
+
+View -> NotiModel: objects.create(user=user_obj, message="Approved")
+activate NotiModel
+NotiModel -> DB: INSERT notification SET ...
+activate DB
+DB --> NotiModel: OK
+deactivate DB
+NotiModel --> View: OK
+deactivate NotiModel
+
+View --> Browser: redirect('admin_user_list')\n+ messages.success(...)
+deactivate View
+
+Browser --> Admin: แสดงผลการอนุมัติสำเร็จ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 4. ระบบเพิ่มสินค้า (Create Product)
+' ========================================================
+@startuml 4_Create_Product
+title 4. ระบบเพิ่มสินค้า (Create Product)
+hide footbox
+autonumber
+
+actor "ผู้ขาย\n(Seller)" as User
+participant "Browser" as Browser
+participant "<<View>>\nProductCreateView" as View
+participant "<<Form>>\nProductForm" as Form
+participant "<<Model>>\nProduct" as Model
+database "Database" as DB
+
+User -> Browser: กรอกข้อมูลสินค้าและกดยืนยัน
+activate Browser
+
+Browser -> View: POST /products/create/\n(data, images)
+activate View
+
+View -> Form: ProductForm(POST, FILES)
+activate Form
+
+Form -> Form: is_valid()
+alt [form valid]
+    Form --> View: True
+    View -> Form: save(commit=False)
+    Form --> View: product (unsaved)
+    
+    View -> Model: product.seller = request.user\nproduct.status = 'pending'\nproduct.save()
+    activate Model
+    Model -> DB: INSERT product SET ...
+    activate DB
+    DB --> Model: OK
+    deactivate DB
+    Model --> View: OK
+    deactivate Model
+    
+    View --> Browser: redirect('product_list')\n+ messages.success(...)
+else [form invalid]
+    Form --> View: False
+    deactivate Form
+    View --> Browser: render product_form.html\n(form with errors)
+end
+deactivate View
+
+Browser --> User: แสดงผลการเพิ่มสินค้า
+deactivate Browser
+@enduml
+
+' ========================================================
+' 5. ระบบแอดมินอนุมัติสินค้า (Admin Approve Product)
+' ========================================================
+@startuml 5_Admin_Approve_Product
+title 5. ระบบแอดมินอนุมัติสินค้า (Admin Approve Product)
+hide footbox
+autonumber
+
+actor "ผู้ดูแลระบบ\n(Admin)" as Admin
+participant "Browser" as Browser
+participant "<<View>>\nAdminApproveProductView" as View
+participant "<<Model>>\nProduct" as ProdModel
+participant "<<Model>>\nNotification" as NotiModel
+database "Database" as DB
+
+Admin -> Browser: คลิกอนุมัติสินค้า
+activate Browser
+
+Browser -> View: POST /admin/approve_product/<id>/
+activate View
+
+View -> ProdModel: objects.get(id=prodId)
+activate ProdModel
+ProdModel -> DB: SELECT * FROM product WHERE id=...
+activate DB
+DB --> ProdModel: row
+deactivate DB
+ProdModel --> View: product_obj
+deactivate ProdModel
+
+View -> ProdModel: product_obj.status = 'active'\nproduct_obj.save()
+activate ProdModel
+ProdModel -> DB: UPDATE product SET status='active' ...
+activate DB
+DB --> ProdModel: OK
+deactivate DB
+ProdModel --> View: OK
+deactivate ProdModel
+
+View -> NotiModel: objects.create(user=product_obj.seller, msg="Product Approved")
+activate NotiModel
+NotiModel -> DB: INSERT notification SET ...
+activate DB
+DB --> NotiModel: OK
+deactivate DB
+NotiModel --> View: OK
+deactivate NotiModel
+
+View --> Browser: redirect('admin_product_list')\n+ messages.success(...)
+deactivate View
+
+Browser --> Admin: แสดงผลการอนุมัติสำเร็จ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 6. ระบบค้นหาและกรองสินค้า (Search & Filter Products)
+' ========================================================
+@startuml 6_Search_Filter_Products
+title 6. ระบบค้นหาและกรองสินค้า (Search & Filter)
+hide footbox
+autonumber
+
+actor "ผู้ซื้อ\n(Buyer)" as User
+participant "Browser" as Browser
+participant "<<View>>\nProductListView" as View
+participant "<<Form>>\nSearchForm" as Form
+participant "<<Model>>\nProduct" as Model
+database "Database" as DB
+
+User -> Browser: พิมพ์คำค้นหา และเลือกหมวดหมู่
+activate Browser
+
+Browser -> View: GET /products/?keyword=...&category=...
+activate View
+
+View -> Form: SearchForm(GET)
+activate Form
+Form -> Form: is_valid()
+Form --> View: cleaned_data
+deactivate Form
+
+View -> Model: objects.filter(name__icontains=..., category=...)
+activate Model
+Model -> DB: SELECT * FROM product WHERE ...
+activate DB
+DB --> Model: rows
+deactivate DB
+Model --> View: queryset (productList)
+deactivate Model
+
+View --> Browser: render product_list.html\n(context: productList)
+deactivate View
+
+Browser --> User: แสดงรายการสินค้าที่ค้นพบ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 7. ระบบแชท (Chat System via WebSocket)
+' ========================================================
+@startuml 7_Chat_System
+title 7. ระบบแชท (Chat System via WebSocket)
+hide footbox
+autonumber
+
+actor "ผู้ใช้งาน\n(User)" as User
+participant "Browser" as Browser
+participant "<<Consumer>>\nChatConsumer" as Consumer
+participant "<<Model>>\nChatRoom" as RoomModel
+participant "<<Model>>\nMessage" as MsgModel
+database "Database" as DB
+
+User -> Browser: พิมพ์ข้อความและกดส่ง
+activate Browser
+
+Browser -> Consumer: WebSocket SEND\n{"message": content, "roomId": id}
+activate Consumer
+
+Consumer -> RoomModel: objects.get(id=roomId)
+activate RoomModel
+RoomModel -> DB: SELECT * FROM chatroom WHERE id=...
+activate DB
+DB --> RoomModel: row
+deactivate DB
+RoomModel --> Consumer: room_obj
+deactivate RoomModel
+
+Consumer -> MsgModel: objects.create(room=room_obj, sender=user, content=...)
+activate MsgModel
+MsgModel -> DB: INSERT message SET ...
+activate DB
+DB --> MsgModel: OK
+deactivate DB
+MsgModel --> Consumer: msg_obj
+deactivate MsgModel
+
+Consumer -> Consumer: group_send(roomId, message_data)
+Consumer --> Browser: WebSocket RECEIVE\n(new message)
+deactivate Consumer
+
+Browser --> User: แสดงข้อความใหม่ในหน้าจอ
+deactivate Browser
+@enduml
+
+' ========================================================
+' 8. ระบบรีวิวสินค้า (Review Product)
+' ========================================================
+@startuml 8_Review_Product
+title 8. ระบบรีวิวสินค้า (Review Product)
+hide footbox
+autonumber
+
+actor "ผู้ซื้อ\n(Buyer)" as User
+participant "Browser" as Browser
+participant "<<View>>\nReviewCreateView" as View
+participant "<<Form>>\nReviewForm" as Form
+participant "<<Model>>\nReview" as Model
+database "Database" as DB
+
+User -> Browser: เลือกดาวและเขียนคอมเมนต์
+activate Browser
+
+Browser -> View: POST /products/<id>/review/\n(rating, comment)
+activate View
+
+View -> Form: ReviewForm(POST)
+activate Form
+
+Form -> Form: is_valid()
+alt [form valid]
+    Form --> View: True
+    View -> Form: save(commit=False)
+    Form --> View: review (unsaved)
+    
+    View -> Model: review.product = product_obj\nreview.user = request.user\nreview.save()
+    activate Model
+    Model -> DB: INSERT review SET ...
+    activate DB
+    DB --> Model: OK
+    deactivate DB
+    Model --> View: OK
+    deactivate Model
+    
+    View --> Browser: redirect('product_detail')\n+ messages.success(...)
+else [form invalid]
+    Form --> View: False
+    deactivate Form
+    View --> Browser: render product_detail.html\n(form with errors)
+end
+deactivate View
+
+Browser --> User: แสดงผลบนหน้ารายละเอียดสินค้า
+deactivate Browser
+@enduml
+
+' ========================================================
+' 9. ระบบรายงานปัญหา (Report System)
+' ========================================================
+@startuml 9_Report_System
+title 9. ระบบรายงานปัญหา (Report System)
+hide footbox
+autonumber
+
+actor "ผู้ใช้งาน\n(User)" as User
+participant "Browser" as Browser
+participant "<<View>>\nReportCreateView" as View
+participant "<<Form>>\nReportForm" as Form
+participant "<<Model>>\nReport" as Model
+database "Database" as DB
+
+User -> Browser: กรอกรายละเอียดปัญหาและแนบรูป
+activate Browser
+
+Browser -> View: POST /report/\n(reason, image)
+activate View
+
+View -> Form: ReportForm(POST, FILES)
+activate Form
+
+Form -> Form: is_valid()
+alt [form valid]
+    Form --> View: True
+    View -> Form: save(commit=False)
+    Form --> View: report (unsaved)
+    
+    View -> Model: report.user = request.user\nreport.save()
+    activate Model
+    Model -> DB: INSERT report SET ...
+    activate DB
+    DB --> Model: OK
+    deactivate DB
+    Model --> View: OK
+    deactivate Model
+    
+    View --> Browser: redirect('home')\n+ messages.success(...)
+else [form invalid]
+    Form --> View: False
+    deactivate Form
+    View --> Browser: render report_form.html\n(form with errors)
+end
+deactivate View
+
+Browser --> User: แสดงข้อความขอบคุณที่รายงาน
+deactivate Browser
+@enduml

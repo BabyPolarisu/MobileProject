@@ -36,6 +36,50 @@ class RoleSwitchBanner extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () => state.checkBackendConnection(),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: state.isConnectedToBackend ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: state.isConnectedToBackend ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: state.isConnectedToBackend ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    state.isConnectedToBackend ? 'Django Online' : 'Django Offline',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: state.isConnectedToBackend ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.sync,
+                    size: 13,
+                    color: state.isConnectedToBackend ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           TextButton.icon(
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

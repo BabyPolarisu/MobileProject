@@ -1,0 +1,94 @@
+@startuml usecase_diagram
+left to right direction
+skinparam shadowing false
+skinparam actorStyle awesome
+
+' --- Actors ฝั่งซ้าย (ผู้ใช้งานทั่วไป) ---
+actor "ผู้เยี่ยมชม (Guest)" as Guest
+actor "ผู้ซื้อ (Buyer)" as Buyer
+actor "ผู้ขาย (Seller)" as Seller
+
+' --- Actors ฝั่งขวา (ผู้ดูแลระบบ) ---
+actor "ผู้ดูแลระบบ (Admin)" as Admin
+
+' --- Actor Inheritance (การสืบทอดสิทธิ์) ---
+' Buyer มีสิทธิ์ทุกอย่างของ Guest และ Seller มีสิทธิ์ทุกอย่างของ Buyer
+Guest <|-- Buyer
+Buyer <|-- Seller
+
+rectangle "ระบบตลาดนัดออนไลน์ (UniMarket System)" {
+
+  ' === กลุ่ม Guest ===
+  usecase "(UC-01) ลงทะเบียน" as UC01
+  usecase "(UC-02) เข้าสู่ระบบ (Email/Google)" as UC02
+  usecase "(UC-03) ดูรายการสินค้าทั้งหมด" as UC03
+  usecase "(UC-06) ค้นหาสินค้า" as UC06
+  usecase "(UC-07) กรองหมวดหมู่สินค้า" as UC07
+
+  ' === กลุ่ม Buyer ===
+  usecase "(UC-04) แก้ไขโปรไฟล์" as UC04
+  usecase "(UC-05) ยืนยันตัวตน (อัปโหลดเอกสาร)" as UC05
+  usecase "(UC-08) ดูรายละเอียดการติดต่อผู้ขาย" as UC08
+  usecase "(UC-09) รีวิวสินค้า" as UC09
+  usecase "(UC-10) แจ้งปัญหา (Report)" as UC10
+  usecase "(UC-11) ดูการแจ้งเตือน" as UC11
+  usecase "(UC-12) สินค้าที่ชอบ (Wishlist)" as UC12
+  usecase "(UC-20) แชทพูดคุยซื้อขาย" as UC20
+
+  ' === กลุ่ม Seller ===
+  usecase "(UC-13) ลงขายสินค้า" as UC13
+  usecase "(UC-14) ลบ/แก้ไขสินค้า" as UC14
+  usecase "(UC-15) เปลี่ยนสถานะสินค้า (ปิดการขาย)" as UC15
+
+  ' === กลุ่ม Admin ===
+  usecase "(UC-16) ตรวจสอบและยืนยันผู้ใช้งาน" as UC16
+  usecase "(UC-17) ตรวจสอบและอนุมัติสินค้า" as UC17
+  usecase "(UC-18) ระงับการใช้งาน" as UC18
+  usecase "(UC-19) ดูแดชบอร์ด" as UC19
+  usecase "(UC-21) จัดการข้อร้องเรียน" as UC21
+}
+
+' --- Connections (Actor -> Use Case) ---
+
+' Guest
+Guest -- UC01
+Guest -- UC02
+Guest -- UC03
+
+' Buyer
+Buyer -- UC04
+Buyer -- UC05
+Buyer -- UC08
+Buyer -- UC09
+Buyer -- UC11
+Buyer -- UC12
+Buyer -- UC20
+
+' Seller
+Seller -- UC13
+Seller -- UC14
+Seller -- UC15
+
+' Admin (จัดการระบบหลักๆ)
+UC16 -- Admin
+UC17 -- Admin
+UC18 -- Admin
+UC19 -- Admin
+UC21 -- Admin
+UC10 -- Admin
+UC03 -- Admin
+
+' --- Use Case Relationships (ความสัมพันธ์ระหว่าง Use Case) ---
+
+' 1. การค้นหาและกรอง เป็นส่วนขยายของการดูสินค้า
+UC03 <.. UC06 : <<extend>>
+UC03 <.. UC07 : <<extend>>
+
+' 2. การแจ้งปัญหา สามารถเกิดได้ตอนดูรายละเอียดผู้ขายหรือดูหน้าสินค้า
+UC08 <.. UC10 : <<extend>>
+UC03 <.. UC10 : <<extend>>
+
+' 3. การแชท เกิดขึ้นเมื่อดูหน้าผู้ขายหรือหน้าสินค้า
+UC08 <.. UC20 : <<extend>>
+
+@enduml

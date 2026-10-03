@@ -1,0 +1,117 @@
+@startuml ER_Diagram
+title Entity-Relationship Diagram (Unimarket2)
+
+' กำหนดรูปแบบการแสดงผล
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+' ==========================================
+' Entities (ตารางต่างๆ)
+' ==========================================
+
+entity "User (auth_user)" as User {
+  *id : int <<PK>>
+  --
+  username : varchar
+  email : varchar
+  password : varchar
+  role : varchar (buyer, seller, admin)
+  status : varchar (pending, approved)
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "Verification" as Verification {
+  *id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  image_data : varchar
+  status : varchar (pending, approved, rejected)
+  created_at : datetime
+}
+
+entity "Notification" as Notification {
+  *id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  message : text
+  is_read : boolean
+  created_at : datetime
+}
+
+entity "Product" as Product {
+  *id : int <<PK>>
+  --
+  seller_id : int <<FK>>
+  name : varchar
+  description : text
+  category : varchar
+  price : decimal
+  status : varchar (pending, active)
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "Review" as Review {
+  *id : int <<PK>>
+  --
+  product_id : int <<FK>>
+  user_id : int <<FK>>
+  rating : int
+  comment : text
+  created_at : datetime
+}
+
+entity "Report" as Report {
+  *id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  reported_user_id : int <<FK>> (nullable)
+  reported_product_id : int <<FK>> (nullable)
+  reason : text
+  image_url : varchar
+  status : varchar (pending, resolved)
+  created_at : datetime
+}
+
+entity "ChatRoom" as ChatRoom {
+  *id : int <<PK>>
+  --
+  buyer_id : int <<FK>>
+  seller_id : int <<FK>>
+  created_at : datetime
+}
+
+entity "Message" as Message {
+  *id : int <<PK>>
+  --
+  room_id : int <<FK>>
+  sender_id : int <<FK>>
+  content : text
+  sent_at : datetime
+}
+
+' ==========================================
+' Relationships (ความสัมพันธ์)
+' ==========================================
+
+User ||--o| Verification : "1 to 1\n(ยืนยันตัวตน)"
+User ||--o{ Notification : "1 to M\n(รับการแจ้งเตือน)"
+User ||--o{ Product : "1 to M\n(ลงขายสินค้า)"
+User ||--o{ Review : "1 to M\n(เขียนรีวิว)"
+User ||--o{ Report : "1 to M\n(ส่งคำรายงาน)"
+
+Product ||--o{ Review : "1 to M\n(มีรีวิว)"
+
+' ความสัมพันธ์ที่เกี่ยวกับการ Report
+User |o--o{ Report : "1 to M\n(ถูกรายงาน)"
+Product |o--o{ Report : "1 to M\n(ถูกรายงาน)"
+
+' ความสัมพันธ์ระบบแชท
+User ||--o{ ChatRoom : "1 to M\n(เป็นผู้ซื้อ)"
+User ||--o{ ChatRoom : "1 to M\n(เป็นผู้ขาย)"
+ChatRoom ||--o{ Message : "1 to M\n(มีข้อความ)"
+User ||--o{ Message : "1 to M\n(ส่งข้อความ)"
+
+@enduml

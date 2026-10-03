@@ -35,18 +35,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(isDesktop ? 105 : 95),
-        child: Column(
-          children: [
-            const RoleSwitchBanner(),
-            if (isDesktop)
-              _buildDesktopTopBar(context, state)
-            else
-              _buildMobileTopBar(context, state),
-          ],
-        ),
+        preferredSize: Size.fromHeight(isDesktop ? 65 : 56),
+        child: isDesktop
+            ? _buildDesktopTopBar(context, state)
+            : _buildMobileTopBar(context, state),
       ),
-      body: _pages[_currentIndex],
+      body: Column(
+        children: [
+          const RoleSwitchBanner(),
+          Expanded(child: _pages[_currentIndex]),
+        ],
+      ),
+
       floatingActionButton: !isDesktop && _currentIndex == 0
           ? FloatingActionButton.extended(
               backgroundColor: AppTheme.accent,
@@ -107,7 +107,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget _buildDesktopTopBar(BuildContext context, AppState state) {
     return Container(
       height: 65,
-      color: Colors.white,
+      color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: MaxWidthContainer(
         maxWidth: 1200,
@@ -159,7 +159,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 );
               },
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
+
+            // Dark Mode Toggle
+            IconButton(
+              tooltip: state.isDarkMode ? 'เปลี่ยนเป็น Light Mode' : 'เปลี่ยนเป็น Dark Mode',
+              icon: Icon(
+                state.isDarkMode ? Icons.light_mode : Icons.dark_mode_outlined,
+                color: state.isDarkMode ? Colors.amber : null,
+              ),
+              onPressed: () => state.toggleDarkMode(),
+            ),
 
             // Notifications
             IconButton(
@@ -203,6 +213,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 ),
               ),
             ),
+            const SizedBox(width: 4),
+
+            // Logout Button
+            IconButton(
+              tooltip: 'ออกจากระบบ (OIDC Sign Out)',
+              icon: const Icon(Icons.logout, size: 20, color: AppTheme.danger),
+              onPressed: () => state.logout(),
+            ),
+
           ],
         ),
       ),

@@ -1,0 +1,170 @@
+{% comment %} {% if messages %}
+    {% for message in messages %}
+        <div class="p-4 mb-4 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %} {% endcomment %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UniMarket | ตลาดนัดมหาวิทยาลัย{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#1E3A8A', // Deep Royal Navy (Flutter AppTheme.primary)
+                            light: '#3B82F6',
+                            dark: '#172554',
+                            hover: '#1D4ED8',
+                        },
+                        accent: {
+                            DEFAULT: '#F97316', // Vibrant Orange (Flutter AppTheme.accent)
+                            hover: '#EA580C',
+                        },
+                        surface: '#FFFFFF',
+                        slateBg: '#F8FAFC',
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-900 antialiased min-h-screen flex flex-col">
+
+    {% include 'partials/header.html' %}
+
+    <main class="py-6 flex-grow">
+        <div class="container mx-auto px-4 max-w-7xl">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-sm text-slate-500 mt-auto">
+        <div class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 max-w-7xl">
+            <div class="flex items-center gap-2 font-semibold text-primary">
+                <span>🎓</span>
+                <span>UniMarket &copy; 2026</span>
+                <span class="text-xs text-slate-400">| Course Project Week 16</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Django OIDC Server :8000
+                </span>
+                <a href="http://localhost:50000" target="_blank" class="inline-flex items-center gap-1 text-primary hover:text-accent font-medium hover:underline">
+                    📱 Flutter Web :50000 &rarr;
+                </a>
+            </div>
+        </div>
+    </footer>
+
+<div id="reportModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+        
+        <div class="bg-red-50 px-6 py-4 border-b border-red-100 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-red-700 flex items-center gap-2">
+                🚨 แจ้งปัญหา / รายงาน
+            </h3>
+            <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+        </div>
+
+        <form action="{% url 'report_page' %}" method="POST" class="p-6">
+            {% csrf_token %}
+            
+            <input type="hidden" name="product_id" id="report_product_id">
+            <input type="hidden" name="user_id" id="report_user_id">
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">หัวข้อปัญหา</label>
+                    <select name="reason" required class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm">
+                        <option value="bug">🐛 เว็บไซต์มีปัญหา / บั๊ก</option>
+                        <option value="spam">📢 สแปม / โฆษณา</option>
+                        <option value="fake">❌ สินค้าปลอม</option>
+                        <option value="fraud">💸 ฉ้อโกง / หลอกลวง</option>
+                        <option value="harassment">🤬 คำหยาบคาย / คุกคาม</option>
+                        <option value="other">📝 อื่นๆ</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียดเพิ่มเติม</label>
+                    <textarea name="details" rows="3" required placeholder="โปรดระบุรายละเอียด..." class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button type="button" onclick="closeReportModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+                    ยกเลิก
+                </button>
+                <button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-sm text-sm">
+                    ส่งรายงาน
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                icon: '{{ message.tags }}' === 'error' ? 'error' : 'success', // ถ้า error ให้โชว์กากบาท ถ้า success ให้โชว์ติ๊กถูก
+                title: '{{ message.tags }}' === 'error' ? 'เกิดข้อผิดพลาด' : 'สำเร็จ!',
+                text: '{{ message }}',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'ตกลง',
+                timer: 3000, // ปิดเองใน 3 วิ
+                timerProgressBar: true
+            });
+        {% endfor %}
+    {% endif %}
+    
+    function openReportModal(type, id = null) {
+        const modal = document.getElementById('reportModal');
+        const productInput = document.getElementById('report_product_id');
+        const userInput = document.getElementById('report_user_id');
+
+        // รีเซ็ตค่าเก่าก่อน
+        productInput.value = '';
+        userInput.value = '';
+
+        // ตั้งค่าใหม่ตามปุ่มที่กดมา
+        if (type === 'product') {
+            productInput.value = id;
+        } else if (type === 'user') {
+            userInput.value = id;
+        }
+        // ถ้า type === 'general' ไม่ต้องเซ็ต ID อะไร (แจ้งเว็บพัง)
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>

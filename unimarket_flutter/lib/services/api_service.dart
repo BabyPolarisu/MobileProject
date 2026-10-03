@@ -17,7 +17,17 @@ class ApiService {
     if (authToken != null) 'Authorization': 'Token $authToken',
   };
 
+  /// Check whether the Django backend server is online
   Future<bool> checkServerHealth() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/health/')).timeout(
+        const Duration(seconds: 3),
+      );
+      if (response.statusCode >= 200 && response.statusCode < 400) {
+        return true;
+      }
+    } catch (_) {}
+
     try {
       final response = await http.get(Uri.parse('$baseUrl/')).timeout(
         const Duration(seconds: 3),
@@ -28,19 +38,164 @@ class ApiService {
     }
   }
 
-  Future<List<ProductModel>> fetchProducts() async {
+  /// Fetch initial mobile app configuration from backend
+  Future<Map<String, dynamic>?> fetchMobileConfig() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/products/'), headers: _headers);
+      final response = await http.get(Uri.parse('$baseUrl/api/mobile/config/')).timeout(
+        const Duration(seconds: 4),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(utf8.decode(response.bodyBytes));
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Register mobile client device info with backend
+  Future<void> registerMobileDevice({required String platform, required String model}) async {
+    try {
+      await http.post(
+        Uri.parse('$baseUrl/api/mobile/devices/register/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'platform': platform,
+          'device_model': model,
+          'app_version': '1.0.0',
+        }),
+      ).timeout(const Duration(seconds: 3));
+    } catch (_) {}
+  }
+
+
+  /// Fetch products with optional filtering
+  Future<List<ProductModel>> fetchProducts({
+    int? categoryId,
+    String? condition,
+    String? search,
+    String? status,
+  }) async {
+    try {
+      final queryParams = <String, String>{};
+      if (categoryId != null) queryParams['category'] = categoryId.toString();
+      if (condition != null && condition.isNotEmpty) queryParams['condition'] = condition;
+      if (search != null && search.isNotEmpty) queryParams['search'] = search;
+      if (status != null && status.isNotEmpty) queryParams['status'] = status;
+
+      final uri = Uri.parse('$baseUrl/api/products/').replace(queryParameters: queryParams.isEmpty ? null : queryParams);
+      final response = await http.get(uri, headers: _headers).timeout(const Duration(seconds: 5));
       if (response.statusCode == 200) {
         final List data = jsonDecode(utf8.decode(response.bodyBytes));
         return data.map((e) => ProductModel.fromJson(e)).toList();
       }
-    } catch (e) {
-      // Fallback handled by AppState
-    }
+    } catch (_) {}
     return [];
   }
 
+  /// Create a new product on the backend
+  Future<ProductModel?> createProduct({
+    required String name,
+    required String description,
+    required double price,
+    required String condition,
+    required int categoryId,
+    required int sellerId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/products/'),
+        headers: _headers,
+        body: jsonEncode({
+          'name': name,
+          'description': description,
+          'price': price,
+          'condition': condition,
+          'category_id': categoryId,
+          'seller_id': sellerId,
+        }),
+      );
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        return ProductModel.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Update an existing product on the backend
+  Future<ProductModel?> updateProduct({
+    required int id,
+    required String name,
+    required String description,
+    required double price,
+    required String condition,
+    int? categoryId,
+    String? status,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'name': name,
+        'description': description,
+        'price': price,
+        'condition': condition,
+      };
+      if (categoryId != null) body['category_id'] = categoryId;
+      if (status != null) body['status'] = status;
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/api/products/$id/'),
+        headers: _headers,
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        return ProductModel.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Delete a product from backend
+  Future<bool> deleteProduct(int id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/api/products/$id/'),
+        headers: _headers,
+      );
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Toggle product favorite
+  Future<bool?> toggleFavorite(int productId, int userId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/products/$productId/favorite/'),
+        headers: _headers,
+        body: jsonEncode({'user_id': userId}),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        return data['is_favorite'] as bool?;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetch categories from backend
+  Future<List<CategoryModel>> fetchCategories() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/categories/'), headers: _headers);
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(utf8.decode(response.bodyBytes));
+        return data.map((e) => CategoryModel.fromJson(e)).toList();
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  /// User Login
   Future<UserModel?> login(String username, String password) async {
     try {
       final response = await http.post(
@@ -55,5 +210,57 @@ class ApiService {
       }
     } catch (_) {}
     return null;
+  }
+
+  /// Admin moderate product
+  Future<bool> adminProductAction(int productId, String action) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/admin/products/$productId/action/'),
+        headers: _headers,
+        body: jsonEncode({'action': action}),
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Send chat message
+  Future<bool> sendChatMessage(int roomId, String content, int senderId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/chat/rooms/$roomId/messages/'),
+        headers: _headers,
+        body: jsonEncode({'content': content, 'user_id': senderId}),
+      );
+      return response.statusCode == 201 || response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Submit report
+  Future<bool> submitReport({
+    required int reporterId,
+    required String reason,
+    required String details,
+    int? productId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/reports/'),
+        headers: _headers,
+        body: jsonEncode({
+          'reporter_id': reporterId,
+          'reason': reason,
+          'details': details,
+          'product_id': ?productId,
+        }),
+      );
+      return response.statusCode == 201 || response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
   }
 }

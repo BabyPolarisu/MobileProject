@@ -1,0 +1,79 @@
+{% load humanize %}
+{% load static %}
+
+<div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 border border-slate-200 overflow-hidden group flex flex-col h-full relative">
+    
+    <!-- Image Area with Condition & Sold Badges (Matches Flutter ProductCard Stack) -->
+    <a href="{% url 'product_detail' product.pk %}" class="block relative pt-[90%] overflow-hidden bg-slate-100">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" 
+                 alt="{{ product.name }}" 
+                 class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        {% else %}
+            <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                <span class="text-3xl">📦</span>
+                <span class="text-[11px] text-slate-400 mt-1">ไม่มีรูปภาพ</span>
+            </div>
+        {% endif %}
+
+        <!-- Condition Tag (Top Left) -->
+        <div class="absolute top-2.5 left-2.5 z-10">
+            {% if product.condition == 'new' %}
+                <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                    ✨ มือหนึ่ง
+                </span>
+            {% else %}
+                <span class="bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                    📦 มือสอง
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Sold Tag Overlay -->
+        {% if product.status == 'sold' %}
+            <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center z-20">
+                <span class="bg-red-600 text-white text-xs font-extrabold px-3 py-1 rounded-lg shadow-lg tracking-wider">
+                    ขายแล้ว
+                </span>
+            </div>
+        {% endif %}
+    </a>
+
+    <!-- Card Content -->
+    <div class="p-3.5 flex flex-col flex-grow">
+        <!-- Category Pill & Title -->
+        <div class="mb-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span class="truncate max-w-[120px]">{{ product.category.name|default:"ทั่วไป" }}</span>
+            <span>{{ product.created_at|timesince }}ที่แล้ว</span>
+        </div>
+
+        <h3 class="font-bold text-slate-900 text-sm mb-1.5 line-clamp-1 group-hover:text-primary transition-colors">
+            <a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a>
+        </h3>
+        
+        <p class="text-slate-500 text-xs mb-3 line-clamp-2 leading-relaxed flex-grow">
+            {{ product.description|default:"ไม่มีรายละเอียดเพิ่มเติม" }}
+        </p>
+
+        <!-- Price & Seller Footer -->
+        <div class="mt-auto pt-2.5 border-t border-slate-100 flex items-center justify-between">
+            <div class="text-base sm:text-lg font-black text-primary">
+                ฿{{ product.price|intcomma }}
+            </div>
+
+            <a href="{% url 'seller_profile' product.seller.pk %}" class="flex items-center gap-1.5 hover:opacity-80 transition group/seller">
+                {% if product.seller.profile.avatar %}
+                    <img src="{{ product.seller.profile.avatar.url }}" 
+                         class="w-6 h-6 rounded-full object-cover border border-slate-200">
+                {% else %}
+                    <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-[10px]">
+                        {{ product.seller.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <span class="text-xs text-slate-600 font-medium group-hover/seller:text-primary truncate max-w-[80px]">
+                    {{ product.seller.profile.display_name|default:product.seller.username }}
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
