@@ -8,7 +8,7 @@ class OidcService {
   static const String defaultIssuer = 'http://127.0.0.1:8000/openid';
   static const String clientId = 'unimarket-flutter';
   static const String clientSecret = 'unimarket_secret_key';
-  static const String redirectUri = 'http://localhost:50000/callback';
+  static const String redirectUri = 'http://localhost:50000/';
   static const List<String> scopes = ['openid', 'profile', 'email'];
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -21,14 +21,22 @@ class OidcService {
   String get issuerUrl => defaultIssuer;
 
   String get authorizeUrl =>
-      '$defaultIssuer/authorize?client_id=$clientId&response_type=code&scope=${scopes.join('+')}&redirect_uri=${Uri.encodeComponent(redirectUri)}';
+      '$defaultIssuer/authorize/?client_id=$clientId&response_type=code&scope=${scopes.join('+')}&redirect_uri=${Uri.encodeComponent(redirectUri)}';
 
   /// Check stored token or URL authorization code and restore logged-in user
   Future<UserModel?> restoreSession() async {
     // 1. Check if browser URL has ?code=... from OIDC Authorization Code redirect
     try {
       final currentUri = Uri.base;
-      final code = currentUri.queryParameters['code'];
+      String? code = currentUri.queryParameters['code'];
+      if ((code == null || code.isEmpty) && currentUri.fragment.contains('code=')) {
+        final frag = currentUri.fragment;
+        final qIndex = frag.indexOf('?');
+        if (qIndex != -1) {
+          final fragQuery = Uri.splitQueryString(frag.substring(qIndex + 1));
+          code = fragQuery['code'];
+        }
+      }
       if (code != null && code.isNotEmpty) {
         debugPrint('[OIDC] Found authorization code in URL: $code');
         final user = await exchangeCodeForToken(code);

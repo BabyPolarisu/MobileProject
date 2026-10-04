@@ -171,12 +171,14 @@ class Command(BaseCommand):
                 "client_type": "confidential",
                 "client_secret": "unimarket_secret_key",
                 "jwt_alg": "RS256",
-                "reuse_consent": True,
-                "require_consent": False,
+                "reuse_consent": False,
+                "require_consent": True,
             }
         )
         oidc_client.client_type = "confidential"
         oidc_client.client_secret = "unimarket_secret_key"
+        oidc_client.require_consent = True
+        oidc_client.reuse_consent = False
         oidc_client._scope = "openid profile email"
         oidc_client.redirect_uris = [
             "http://localhost:50000/callback",

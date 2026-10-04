@@ -17,9 +17,16 @@ def main():
         ) from exc
 
 
+    if sys.platform == 'win32':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+            sys.stderr.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     if len(sys.argv) > 1 and sys.argv[1] == 'runserver' and os.environ.get('RUN_MAIN') != 'true':
         print("\n" + "=" * 62)
-        print("  📱 UNIMARKET MOBILE BACKEND API & OIDC SERVER (WEEK 16)")
+        print("  [UniMarket] UNIMARKET MOBILE BACKEND API & OIDC SERVER (WEEK 16)")
         print("  Course: Mobile Application Development | Branch: project")
         print("  Client Target: Flutter Mobile & Web App (Port 50000)")
         print("  OIDC Issuer:   http://127.0.0.1:8000/openid/")

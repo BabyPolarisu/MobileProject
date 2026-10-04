@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}การยินยอมเข้าถึงข้อมูล (OIDC Consent) - UniMarket{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-10 px-4">
+    <div class="max-w-lg w-full bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-200 space-y-6">
+        
+        <!-- Header & App Icon -->
+        <div class="text-center">
+            <div class="mx-auto w-16 h-16 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-3xl mb-3 shadow-xs">
+                🛡️
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">
+                คำขอสิทธิ์การเข้าถึงข้อมูล (OIDC Consent)
+            </h1>
+            <p class="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
+                OpenID Connect Single Sign-On (UBU SSO)
+            </p>
+        </div>
+
+        <!-- Client & User Banner -->
+        <div class="bg-blue-50/70 border border-blue-100 rounded-2xl p-4 flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center text-2xl font-bold flex-shrink-0 shadow-sm">
+                🎓
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-semibold text-primary uppercase tracking-wider">แอปพลิเคชันที่ขอสิทธิ์</div>
+                <div class="text-sm font-bold text-slate-900 truncate">{{ client.name|default:"UniMarket Mobile & Web App" }}</div>
+                <div class="text-xs text-slate-500 truncate mt-0.5">
+                    เข้าสู่ระบบในนาม: <strong class="text-slate-700">{{ request.user.get_full_name|default:request.user.username }}</strong> ({{ request.user.email }})
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span>📋</span>
+                <span>แอปพลิเคชันนี้ร้องขอสิทธิ์ในการเข้าถึงข้อมูลดังต่อไปนี้:</span>
+            </p>
+
+            <div class="space-y-2.5">
+                {% for scope in scopes %}
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="mt-0.5 text-base">
+                        {% if scope.name == 'openid' %}🆔{% elif scope.name == 'profile' %}👤{% elif scope.name == 'email' %}📧{% else %}🔐{% endif %}
+                    </div>
+                    <div class="flex-1 text-xs">
+                        <div class="font-bold text-slate-800 uppercase tracking-wide">
+                            {{ scope.name }}
+                        </div>
+                        <div class="text-slate-500 mt-0.5 leading-relaxed">
+                            {% if scope.name == 'openid' %}
+                                ยืนยันตัวตนของคุณด้วยรหัสประจำตัวเฉพาะ (OIDC Unique Subject Identifier)
+                            {% elif scope.name == 'profile' %}
+                                อ่านข้อมูลโปรไฟล์ ชื่อ-นามสกุล ชื่อที่แสดง และสถานะผู้ใช้งาน
+                            {% elif scope.name == 'email' %}
+                                อ่านที่อยู่อีเมลมหาวิทยาลัย (@ubu.ac.th)
+                            {% else %}
+                                {{ scope.description|default:scope.name }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span class="text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        จำเป็น
+                    </span>
+                </div>
+                {% empty %}
+                <div class="p-3 text-xs text-slate-500 bg-slate-50 rounded-xl">
+                    ข้อมูลประจำตัวพื้นฐาน (OpenID, Profile, Email)
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Privacy Notice -->
+        <p class="text-center text-[11px] text-slate-400">
+            ระบบความปลอดภัยมาตรฐาน OpenID Connect มหาวิทยาลัยอุบลราชธานี คุณสามารถเพิกถอนสิทธิ์ได้ตลอดเวลา
+        </p>
+
+        <!-- Action Form -->
+        <form method="post" action="{% url 'oidc_provider:authorize' %}" class="space-y-2.5 pt-2 border-t border-slate-100">
+            {% csrf_token %}
+            {{ hidden_inputs }}
+
+            <button name="allow" type="submit" value="Authorize"
+                    class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary shadow-md shadow-blue-950/20 transition duration-150 active:scale-98">
+                <span>✅</span>
+                <span>อนุญาตและเข้าสู่ระบบ (Authorize & Continue)</span>
+            </button>
+
+            <button type="submit" name="decline" value="Decline"
+                    class="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
+                <span>❌</span>
+                <span>ปฏิเสธ / ยกเลิก (Decline)</span>
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -202,12 +202,74 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 28),
 
+                        // Primary Login Button: Django OIDC Web Flow (Matches Rubric ③)
+                        SizedBox(
+                          height: 52,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: (_isLoading || _isRedirecting) ? null : _handleOidcBrowserRedirect,
+                            icon: _isRedirecting
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                                  )
+                                : const Icon(Icons.shield_rounded, size: 22),
+                            label: const Text(
+                              'เข้าสู่ระบบด้วย Django OIDC (UBU SSO)',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'กดปุ่มนี้เพื่อไปหน้าล็อกอิน Django OIDC → ใส่ Demo Account → Consent → กลับแอป',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 22),
+
+                        // Divider with text
+                        Row(
+                          children: [
+                            const Expanded(child: Divider()),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'หรือ เข้าสู่ระบบโดยตรงในแอป (Direct Token)',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? Colors.white54 : Colors.black45,
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider()),
+                          ],
+                        ),
+
+                        const SizedBox(height: 18),
+
                         // Username Field
                         TextFormField(
                           controller: _usernameController,
                           decoration: const InputDecoration(
                             labelText: 'ชื่อผู้ใช้ (Username)',
-                            hintText: 'กรอกชื่อผู้ใช้ระบบมหาวิทยาลัย',
+                            hintText: 'เช่น somchai_ubu หรือ admin',
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (value) {
@@ -217,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 14),
 
                         // Password Field
                         TextFormField(
@@ -243,80 +305,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           onFieldSubmitted: (_) => _handleLogin(),
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 18),
 
-                        // Primary Sign In Button (Real OIDC Direct Token Flow)
+                        // Secondary Direct Sign In Button
                         SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: (_isLoading || _isRedirecting) ? null : _handleLogin,
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.login, size: 20),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'เข้าสู่ระบบ (Sign In via OIDC)',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Divider with text
-                        Row(
-                          children: [
-                            const Expanded(child: Divider()),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'หรือ',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isDark ? Colors.white54 : Colors.black45,
-                                ),
-                              ),
-                            ),
-                            const Expanded(child: Divider()),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Secondary SSO Browser Redirect Flow
-                        SizedBox(
-                          height: 48,
+                          height: 46,
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
                                 color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
                               ),
                             ),
-                            onPressed: (_isLoading || _isRedirecting) ? null : _handleOidcBrowserRedirect,
-                            icon: _isRedirecting
+                            onPressed: (_isLoading || _isRedirecting) ? null : _handleLogin,
+                            icon: _isLoading
                                 ? const SizedBox(
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(strokeWidth: 2),
                                   )
-                                : const Icon(Icons.open_in_browser, size: 20),
+                                : const Icon(Icons.login_rounded, size: 18),
                             label: const Text(
-                              'เข้าสู่ระบบผ่าน OIDC Portal (UBU SSO)',
+                              'เข้าสู่ระบบโดยตรง (Direct Password Grant)',
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                             ),
                           ),
