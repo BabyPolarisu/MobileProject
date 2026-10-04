@@ -12,7 +12,8 @@ import '../admin/admin_dashboard_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final bool showAppBar;
+  const ProfileScreen({super.key, this.showAppBar = false});
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +24,22 @@ class ProfileScreen extends StatelessWidget {
         final wishlistCount = state.wishlistProducts.length;
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('โปรไฟล์ของฉัน'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
+          appBar: showAppBar
+              ? AppBar(
+                  title: const Text('โปรไฟล์ของฉัน'),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                )
+              : null,
           body: MaxWidthContainer(
             maxWidth: 700,
             child: SingleChildScrollView(

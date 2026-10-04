@@ -10,16 +10,19 @@ class RoleSwitchBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
     final isAdmin = state.currentUser.isAdmin;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      color: isAdmin ? const Color(0xFFFEF3C7) : const Color(0xFFEFF6FF),
+      color: isDark
+          ? (isAdmin ? const Color(0xFF451A03) : const Color(0xFF0F172A))
+          : (isAdmin ? const Color(0xFFFEF3C7) : const Color(0xFFEFF6FF)),
       child: Row(
         children: [
           Icon(
             isAdmin ? Icons.admin_panel_settings : Icons.school,
             size: 18,
-            color: isAdmin ? const Color(0xFFD97706) : AppTheme.primary,
+            color: isAdmin ? const Color(0xFFD97706) : AppTheme.primaryLight,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -30,7 +33,9 @@ class RoleSwitchBanner extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isAdmin ? const Color(0xFF92400E) : AppTheme.primary,
+                color: isDark
+                    ? (isAdmin ? const Color(0xFFFDE68A) : const Color(0xFF93C5FD))
+                    : (isAdmin ? const Color(0xFF92400E) : AppTheme.primary),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

@@ -7,16 +7,19 @@ import '../../core/responsive.dart';
 import 'chat_room_screen.dart';
 
 class ChatListScreen extends StatelessWidget {
-  const ChatListScreen({super.key});
+  final bool showAppBar;
+  const ChatListScreen({super.key, this.showAppBar = false});
 
   @override
   Widget build(BuildContext context) {
     final timeFormatter = DateFormat('HH:mm');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ข้อความแชท (Inbox)'),
-      ),
+      appBar: showAppBar
+          ? AppBar(
+              title: const Text('ข้อความแชท (Inbox)'),
+            )
+          : null,
       body: Consumer<AppState>(
         builder: (context, state, _) {
           final rooms = state.chatRooms;

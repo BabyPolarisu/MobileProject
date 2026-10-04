@@ -5,14 +5,17 @@ import '../../core/responsive.dart';
 import '../widgets/product_card.dart';
 
 class WishlistScreen extends StatelessWidget {
-  const WishlistScreen({super.key});
+  final bool showAppBar;
+  const WishlistScreen({super.key, this.showAppBar = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการโปรด (Wishlist)'),
-      ),
+      appBar: showAppBar
+          ? AppBar(
+              title: const Text('รายการโปรด (Wishlist)'),
+            )
+          : null,
       body: Consumer<AppState>(
         builder: (context, state, _) {
           final items = state.wishlistProducts;
