@@ -8,26 +8,26 @@ UniMarket คือแพลตฟอร์มตลาดนัดออนไ�
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🎯 1. ฟีเจอร์หลัก (Core Functions — 20 คะแนน)
-* 🔐 **Authentication (OIDC):** เข้าสู่ระบบและออกจากระบบผ่าน OpenID Connect Provider (`django-oidc-provider`) Authorization Code Flow มี Route Guard ปกป้องทุกหน้าจอ และจัดเก็บ Token ใน `flutter_secure_storage` เพื่อให้ Session อยู่รอดเมื่อปิด-เปิดแอป
-* ➕ **Create (สร้างข้อมูล):** ลงขายสินค้าใหม่พร้อมฟอร์มตรวจสอบความถูกต้อง (Validation) ทั้งชื่อ ราคา สภาพสินค้า และหมวดหมู่
-* 📖 **Read (ดึงข้อมูล):** แสดงรายการสินค้าในตลาด (List View) พร้อมรายละเอียดของสินค้า ผู้ขาย และสถานะ (Detail View)
-* ✏️ **Update (แก้ไขข้อมูล):** เจ้าของสินค้าสามารถแก้ไขราคา รายละเอียด หรือปรับสถานะสินค้าเป็น "ขายแล้ว" (Sold) ได้ผ่านหน้าสินค้าของฉัน (My Listings) ซิงค์ตรงกับ Backend REST API
-* 🗑️ **Delete (ลบข้อมูล):** เจ้าของสินค้าสามารถลบรายการสินค้าของตนเองออกจากระบบได้จริง
-* 🛡️ **Error Handling:** จัดการข้อผิดพลาดอย่างเป็นมิตร แสดง SnackBar / แจ้งเตือนเมื่อเซิร์ฟเวอร์ออฟไลน์ หรือการเชื่อมต่อล้มเหลว โดยแอปพลิเคชันไม่แครช
+###  1. ฟีเจอร์หลัก (Core Functions — 20 คะแนน)
+*  **Authentication (OIDC):** เข้าสู่ระบบและออกจากระบบผ่าน OpenID Connect Provider (`django-oidc-provider`) Authorization Code Flow มี Route Guard ปกป้องทุกหน้าจอ และจัดเก็บ Token ใน `flutter_secure_storage` เพื่อให้ Session อยู่รอดเมื่อปิด-เปิดแอป
+*  **Create (สร้างข้อมูล):** ลงขายสินค้าใหม่พร้อมฟอร์มตรวจสอบความถูกต้อง (Validation) ทั้งชื่อ ราคา สภาพสินค้า และหมวดหมู่
+*  **Read (ดึงข้อมูล):** แสดงรายการสินค้าในตลาด (List View) พร้อมรายละเอียดของสินค้า ผู้ขาย และสถานะ (Detail View)
+*  **Update (แก้ไขข้อมูล):** เจ้าของสินค้าสามารถแก้ไขราคา รายละเอียด หรือปรับสถานะสินค้าเป็น "ขายแล้ว" (Sold) ได้ผ่านหน้าสินค้าของฉัน (My Listings) ซิงค์ตรงกับ Backend REST API
+*  **Delete (ลบข้อมูล):** เจ้าของสินค้าสามารถลบรายการสินค้าของตนเองออกจากระบบได้จริง
+*  **Error Handling:** จัดการข้อผิดพลาดอย่างเป็นมิตร แสดง SnackBar / แจ้งเตือนเมื่อเซิร์ฟเวอร์ออฟไลน์ หรือการเชื่อมต่อล้มเหลว โดยแอปพลิเคชันไม่แครช
 
-### ⭐ 2. ฟีเจอร์เสริม (Extra Features — 10 คะแนน)
-* 🌙 **Dark Mode (โหมดมืด):** สลับธีมสว่าง/มืดได้ทันทีผ่านปุ่มบน Top Bar หรือหน้า Profile พร้อมจดจำค่าไว้ด้วย `shared_preferences`
-* 🔍 **Real-time Search & Multi-Filter:** ค้นหาชื่อและคำอธิบายสินค้าแบบเรียลไทม์ พร้อมกรองตาม 8 หมวดหมู่ และสภาพสินค้า (มือหนึ่ง / มือสอง)
-* 💬 **Chat System:** ห้องสนทนาสอบถามสินค้าระหว่างผู้ซื้อและผู้ขาย
-* 🪪 **Student Identity Verification:** ส่งคำขอยืนยันตัวตนด้วยบัตรนักศึกษา พร้อมตราสัญลักษณ์ Verified Student
-* ⚙️ **Admin Moderation & Role Switch:** แดชบอร์ดตรวจสอบ อนุมัติ ระงับสินค้า และจัดการเรื่องร้องเรียน
+###  2. ฟีเจอร์เสริม (Extra Features — 10 คะแนน)
+*  **Dark Mode (โหมดมืด):** สลับธีมสว่าง/มืดได้ทันทีผ่านปุ่มบน Top Bar หรือหน้า Profile พร้อมจดจำค่าไว้ด้วย `shared_preferences`
+*  **Real-time Search & Multi-Filter:** ค้นหาชื่อและคำอธิบายสินค้าแบบเรียลไทม์ พร้อมกรองตาม 8 หมวดหมู่ และสภาพสินค้า (มือหนึ่ง / มือสอง)
+*  **Chat System:** ห้องสนทนาสอบถามสินค้าระหว่างผู้ซื้อและผู้ขาย
+*  **Student Identity Verification:** ส่งคำขอยืนยันตัวตนด้วยบัตรนักศึกษา พร้อมตราสัญลักษณ์ Verified Student
+*  **Admin Moderation & Role Switch:** แดชบอร์ดตรวจสอบ อนุมัติ ระงับสินค้า และจัดการเรื่องร้องเรียน
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 * **Frontend:** [Flutter SDK 3.47.x](https://flutter.dev/) (Dart 3.13.x)
   * State Management: `provider` (MVVM Pattern)
@@ -41,7 +41,7 @@ UniMarket คือแพลตฟอร์มตลาดนัดออนไ�
 
 ---
 
-## 📦 Prerequisites
+##  Prerequisites
 
 ก่อนเริ่มต้นใช้งาน กรุณาติดตั้งเครื่องมือต่อไปนี้บนเครื่องคอมพิวเตอร์ของคุณ:
 1. **[Flutter SDK](https://docs.flutter.dev/get-started/install)** (แนะนำเวอร์ชัน 3.24.x ขึ้นไป)
@@ -53,7 +53,7 @@ UniMarket คือแพลตฟอร์มตลาดนัดออนไ�
 
 ---
 
-## ▶️ How to Run (วิธีรันระบบตามลำดับจริง)
+##  How to Run (วิธีรันระบบตามลำดับจริง)
 
 เปิด Terminal 2 หน้าต่าง แล้วรันตามคำสั่งต่อไปนี้ทีละบรรทัด:
 
@@ -81,34 +81,21 @@ flutter run -d chrome --web-port 50000
 ```
 *(หมายเหตุ: ต้องระบุพอร์ต `--web-port 50000` เพื่อให้ตรงกับ Redirect URI ของ OIDC Provider)*
 
-> 💡 **ทางเลือกเสริมสำหรับ Windows:** สามารถดับเบิ้ลคลิกไฟล์ `run_all.bat` ที่โฟลเดอร์หลักเพื่อเปิดทำงานทั้ง Backend และ Frontend พร้อมกันได้ทันที
+>  **ทางเลือกเสริมสำหรับ Windows:** สามารถดับเบิ้ลคลิกไฟล์ `run_all.bat` ที่โฟลเดอร์หลักเพื่อเปิดทำงานทั้ง Backend และ Frontend พร้อมกันได้ทันที
 
 ---
 
-## 🔑 Demo Accounts (บัญชีสำหรับทดสอบระบบ)
+##  Demo Accounts (บัญชีสำหรับทดสอบระบบ)
 
 สามารถใช้บัญชีทดสอบที่ถูก Seed ไว้ในระบบ OIDC Server ได้ทันที:
 
 | บทบาท (Role) | Username | Password | อีเมล | สิทธิ์ |
 | :--- | :--- | :--- | :--- | :--- |
-| 👨‍🎓 นักศึกษา | `somchai_ubu` | `somchai1234` | `somchai@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
-| 👩‍🎓 นักศึกษา | `thanaporn_k` | `thanaporn1234` | `thanaporn@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
-| 🛡️ ผู้ดูแลระบบ | `admin` | `admin1234` | `admin@ubu.ac.th` | Superuser / Admin Moderation |
+|  นักศึกษา | `somchai_ubu` | `somchai1234` | `somchai@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
+|  นักศึกษา | `thanaporn_k` | `thanaporn1234` | `thanaporn@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
+|  ผู้ดูแลระบบ | `admin` | `admin1234` | `admin@ubu.ac.th` | Superuser / Admin Moderation |
 
-*(หรือสามารถกด **สมัครสมาชิกใหม่** ด้วยอีเมล `@ubu.ac.th` ได้จริงจากหน้า Login ของแอป)*
-
----
-
-## 📱 Screenshots (ภาพหน้าจอสำคัญ)
-
-| หน้าแรกตลาดสินค้า (Marketplace Feed) | หน้าเข้าสู่ระบบ & OIDC Provider |
-| :---: | :---: |
-| ![UniMarket App](docs/screenshots/unimarket_app.jpg) | ![UniMarket Auth](docs/screenshots/unimarket_auth_dark.jpg) |
-
----
-
-## 🎬 Demo Video
+##  Demo Video
 
 > 🔗 **YouTube Link (Unlisted):** [https://youtu.be/YOUR_DEMO_VIDEO_LINK](https://youtu.be/YOUR_DEMO_VIDEO_LINK)  
-> *(อัปโหลดเป็นแบบ **Unlisted** บน YouTube พร้อมเสียงบรรยายครบ 5 ช่วงตาม Storyboard สัปดาห์ที่ 16)*
 
