@@ -204,27 +204,43 @@ def api_login(request):
 @permission_classes([AllowAny])
 def api_register(request):
     username = request.data.get('username', '').strip()
-    email = request.data.get('email', '').strip()
+    email = request.data.get('email', '').strip().lower()
     password = request.data.get('password', '').strip()
     display_name = request.data.get('display_name', '').strip()
     phone_number = request.data.get('phone_number', '').strip()
+    first_name = request.data.get('first_name', '').strip()
+    last_name = request.data.get('last_name', '').strip()
 
-    if not username or not password:
-        return Response({'error': 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน'}, status=status.HTTP_400_BAD_REQUEST)
+    if not username or not password or not email:
+        return Response({'error': 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อผู้ใช้, อีเมล @ubu.ac.th และรหัสผ่าน)'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if User.objects.filter(username=username).exists():
-        return Response({'error': 'ชื่อผู้ใช้นี้มีคนใช้แล้ว'}, status=status.HTTP_400_BAD_REQUEST)
+    if len(password) < 6:
+        return Response({'error': 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = User.objects.create_user(username=username, email=email, password=password)
+    if not email.endswith('@ubu.ac.th'):
+        return Response({'error': 'สงวนสิทธิ์เฉพาะอีเมลมหาวิทยาลัยอุบลราชธานี (@ubu.ac.th) เท่านั้น'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username__iexact=username).exists():
+        return Response({'error': 'ชื่อผู้ใช้นี้มีคนใช้แล้ว กรุณาเลือกชื่อผู้ใช้อื่น'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email__iexact=email).exists():
+        return Response({'error': 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่นหรือเข้าสู่ระบบ'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name
+    )
     profile, _ = UserProfile.objects.get_or_create(user=user)
-    if display_name:
-        profile.display_name = display_name
+    profile.display_name = display_name if display_name else (f"{first_name} {last_name}".strip() or username)
     if phone_number:
         profile.phone_number = phone_number
     profile.save()
 
     return Response({
-        'token': f'token_{user.id}_{user.username}',
+        'message': 'สมัครสมาชิกสำเร็จ ยินดีต้อนรับสู่ UniMarket UBU',
         'user': user_to_dict(user),
     }, status=status.HTTP_201_CREATED)
 

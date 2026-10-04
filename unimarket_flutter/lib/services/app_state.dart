@@ -105,6 +105,27 @@ class AppState extends ChangeNotifier {
     return false;
   }
 
+  Future<Map<String, dynamic>> register({
+    required String username,
+    required String email,
+    required String password,
+    String? displayName,
+    String? phoneNumber,
+    String? firstName,
+    String? lastName,
+  }) async {
+    final res = await apiService.register(
+      username: username,
+      email: email,
+      password: password,
+      displayName: displayName,
+      phoneNumber: phoneNumber,
+      firstName: firstName,
+      lastName: lastName,
+    );
+    return res;
+  }
+
   Future<void> logout() async {
     await oidcService.logout();
     isAuthenticated = false;

@@ -212,6 +212,42 @@ class ApiService {
     return null;
   }
 
+  /// User Registration (enforcing @ubu.ac.th email domain)
+  Future<Map<String, dynamic>> register({
+    required String username,
+    required String email,
+    required String password,
+    String? displayName,
+    String? phoneNumber,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/auth/register/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+          'display_name': displayName,
+          'phone_number': phoneNumber,
+          'first_name': firstName,
+          'last_name': lastName,
+        }),
+      ).timeout(const Duration(seconds: 8));
+
+      final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return {'success': true, 'data': data};
+      } else {
+        return {'success': false, 'error': data['error'] ?? 'การสมัครสมาชิกล้มเหลว'};
+      }
+    } catch (e) {
+      return {'success': false, 'error': 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้: $e'};
+    }
+  }
+
   /// Admin moderate product
   Future<bool> adminProductAction(int productId, String action) async {
     try {

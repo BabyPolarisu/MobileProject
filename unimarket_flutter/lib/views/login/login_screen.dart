@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/app_state.dart';
 import '../../core/theme.dart';
 import '../../core/responsive.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -318,6 +319,68 @@ class _LoginScreenState extends State<LoginScreen> {
                               'เข้าสู่ระบบผ่าน OIDC Portal (UBU SSO)',
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                             ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+                        const Divider(),
+                        const SizedBox(height: 12),
+
+                        // Register New Account Section
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'ยังไม่มีบัญชีผู้ใช้งาน? ',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark ? Colors.white70 : Colors.black54,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                                );
+                              },
+                              child: const Text(
+                                'สมัครสมาชิกใหม่',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: AppTheme.primaryLight,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+
+                        // UBU Domain Constraint Tag
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.verified_user_outlined, size: 14, color: AppTheme.primaryLight),
+                              SizedBox(width: 6),
+                              Text(
+                                'สงวนสิทธิ์เฉพาะอีเมล @ubu.ac.th เท่านั้น',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppTheme.primaryLight,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
