@@ -5,7 +5,8 @@ from django.contrib.auth import authenticate, login as django_login
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -178,6 +179,7 @@ def api_register_mobile_device(request):
 # ==========================================
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@renderer_classes([JSONRenderer])
 def api_login(request):
     username = request.data.get('username', '').strip()
     password = request.data.get('password', '').strip()
@@ -202,6 +204,7 @@ def api_login(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@renderer_classes([JSONRenderer])
 def api_register(request):
     username = request.data.get('username', '').strip()
     email = request.data.get('email', '').strip().lower()
@@ -225,6 +228,13 @@ def api_register(request):
 
     if User.objects.filter(email__iexact=email).exists():
         return Response({'error': 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่นหรือเข้าสู่ระบบ'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Derive first_name and last_name from display_name if not provided
+    if display_name and not first_name:
+        parts = display_name.split(' ', 1)
+        first_name = parts[0]
+        if len(parts) > 1:
+            last_name = parts[1]
 
     user = User.objects.create_user(
         username=username,

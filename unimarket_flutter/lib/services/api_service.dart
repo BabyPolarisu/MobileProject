@@ -56,7 +56,7 @@ class ApiService {
     try {
       await http.post(
         Uri.parse('$baseUrl/api/mobile/devices/register/'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({
           'platform': platform,
           'device_model': model,
@@ -225,7 +225,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/auth/register/'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({
           'username': username,
           'email': email,
@@ -237,11 +237,24 @@ class ApiService {
         }),
       ).timeout(const Duration(seconds: 8));
 
-      final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      Map<String, dynamic> data = {};
+      try {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        if (decoded is Map<String, dynamic>) {
+          data = decoded;
+        }
+      } catch (_) {
+        return {
+          'success': false,
+          'error': 'ไม่สามารถอ่านข้อมูลจากเซิร์ฟเวอร์ได้ (HTTP ${response.statusCode})',
+        };
+      }
+
       if (response.statusCode == 201 || response.statusCode == 200) {
         return {'success': true, 'data': data};
       } else {
-        return {'success': false, 'error': data['error'] ?? 'การสมัครสมาชิกล้มเหลว'};
+        final errorMsg = data['error'] ?? data['detail'] ?? 'การสมัครสมาชิกล้มเหลว (รหัสข้อผิดพลาด ${response.statusCode})';
+        return {'success': false, 'error': errorMsg.toString()};
       }
     } catch (e) {
       return {'success': false, 'error': 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้: $e'};

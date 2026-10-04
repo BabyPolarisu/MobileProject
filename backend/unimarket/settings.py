@@ -284,6 +284,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'products.negotiation.IgnoreClientContentNegotiation',
 }
 
 # --- OpenID Connect (OIDC) Provider Settings ---
