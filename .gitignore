@@ -23,3 +23,6 @@ static/staticfiles/
 .flutter-plugins-dependencies
 .packages
 build/
+
+# Local presentation script (do not push to repo)
+docs/video_presentation_script.md
