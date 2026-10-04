@@ -79,6 +79,35 @@ cd unimarket_flutter
 flutter pub get
 flutter run -d chrome --web-port 50000
 ```
-*(หมายเหตุ: ต้องระบุพอร์ต `--web-port 50000` เพื่อให้ตรงกับ Redirect URI ของ OIDC Provider: `http://localhost:50000/callback`)*
+*(หมายเหตุ: ต้องระบุพอร์ต `--web-port 50000` เพื่อให้ตรงกับ Redirect URI ของ OIDC Provider)*
 
 > 💡 **ทางเลือกเสริมสำหรับ Windows:** สามารถดับเบิ้ลคลิกไฟล์ `run_all.bat` ที่โฟลเดอร์หลักเพื่อเปิดทำงานทั้ง Backend และ Frontend พร้อมกันได้ทันที
+
+---
+
+## 🔑 Demo Accounts (บัญชีสำหรับทดสอบระบบ)
+
+สามารถใช้บัญชีทดสอบที่ถูก Seed ไว้ในระบบ OIDC Server ได้ทันที:
+
+| บทบาท (Role) | Username | Password | อีเมล | สิทธิ์ |
+| :--- | :--- | :--- | :--- | :--- |
+| 👨‍🎓 นักศึกษา | `somchai_ubu` | `somchai1234` | `somchai@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
+| 👩‍🎓 นักศึกษา | `thanaporn_k` | `thanaporn1234` | `thanaporn@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
+| 🛡️ ผู้ดูแลระบบ | `admin` | `admin1234` | `admin@ubu.ac.th` | Superuser / Admin Moderation |
+
+*(หรือสามารถกด **สมัครสมาชิกใหม่** ด้วยอีเมล `@ubu.ac.th` ได้จริงจากหน้า Login ของแอป)*
+
+---
+
+## 📱 Screenshots (ภาพหน้าจอสำคัญ)
+
+| หน้าแรกตลาดสินค้า (Marketplace Feed) | หน้าเข้าสู่ระบบ & OIDC Provider |
+| :---: | :---: |
+| ![UniMarket App](docs/screenshots/unimarket_app.jpg) | ![UniMarket Auth](docs/screenshots/unimarket_auth_dark.jpg) |
+
+---
+
+## 🎬 Demo Video
+
+> 🔗 **YouTube Link (Unlisted):** [https://youtu.be/YOUR_DEMO_VIDEO_LINK](https://youtu.be/YOUR_DEMO_VIDEO_LINK)  
+> *(อัปโหลดเป็นแบบ **Unlisted** บน YouTube พร้อมเสียงบรรยายครบ 5 ช่วงตาม Storyboard สัปดาห์ที่ 16)*
