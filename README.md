@@ -10,7 +10,7 @@ UniMarket คือแพลตฟอร์มตลาดนัดออนไ�
 
 ##  Features
 
-###  1. ฟีเจอร์หลัก (Core Functions — 20 คะแนน)
+###  1. ฟีเจอร์หลัก
 *  **Authentication (OIDC):** เข้าสู่ระบบและออกจากระบบผ่าน OpenID Connect Provider (`django-oidc-provider`) Authorization Code Flow มี Route Guard ปกป้องทุกหน้าจอ และจัดเก็บ Token ใน `flutter_secure_storage` เพื่อให้ Session อยู่รอดเมื่อปิด-เปิดแอป
 *  **Create (สร้างข้อมูล):** ลงขายสินค้าใหม่พร้อมฟอร์มตรวจสอบความถูกต้อง (Validation) ทั้งชื่อ ราคา สภาพสินค้า และหมวดหมู่
 *  **Read (ดึงข้อมูล):** แสดงรายการสินค้าในตลาด (List View) พร้อมรายละเอียดของสินค้า ผู้ขาย และสถานะ (Detail View)
@@ -18,7 +18,7 @@ UniMarket คือแพลตฟอร์มตลาดนัดออนไ�
 *  **Delete (ลบข้อมูล):** เจ้าของสินค้าสามารถลบรายการสินค้าของตนเองออกจากระบบได้จริง
 *  **Error Handling:** จัดการข้อผิดพลาดอย่างเป็นมิตร แสดง SnackBar / แจ้งเตือนเมื่อเซิร์ฟเวอร์ออฟไลน์ หรือการเชื่อมต่อล้มเหลว โดยแอปพลิเคชันไม่แครช
 
-###  2. ฟีเจอร์เสริม (Extra Features — 10 คะแนน)
+###  2. ฟีเจอร์เสริม
 *  **Dark Mode (โหมดมืด):** สลับธีมสว่าง/มืดได้ทันทีผ่านปุ่มบน Top Bar หรือหน้า Profile พร้อมจดจำค่าไว้ด้วย `shared_preferences`
 *  **Real-time Search & Multi-Filter:** ค้นหาชื่อและคำอธิบายสินค้าแบบเรียลไทม์ พร้อมกรองตาม 8 หมวดหมู่ และสภาพสินค้า (มือหนึ่ง / มือสอง)
 *  **Chat System:** ห้องสนทนาสอบถามสินค้าระหว่างผู้ซื้อและผู้ขาย
@@ -94,6 +94,9 @@ flutter run -d chrome --web-port 50000
 |  นักศึกษา | `somchai_ubu` | `somchai1234` | `somchai@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
 |  นักศึกษา | `thanaporn_k` | `thanaporn1234` | `thanaporn@ubu.ac.th` | Verified Student (ลงขาย/ซื้อ/แชท) |
 |  ผู้ดูแลระบบ | `admin` | `admin1234` | `admin@ubu.ac.th` | Superuser / Admin Moderation |
+
+##  Screenshot
+<img width="590" height="858" alt="image" src="https://github.com/user-attachments/assets/bc1be63e-2818-4cde-83df-2b2a59bcf866" /> <img width="587" height="856" alt="image" src="https://github.com/user-attachments/assets/aad96b6c-bf50-4c67-8455-8ecf6b90cda0" /> <img width="588" height="856" alt="image" src="https://github.com/user-attachments/assets/d2b785df-1f17-481a-b8be-e3716d8db306" />
 
 ##  Demo Video
 
