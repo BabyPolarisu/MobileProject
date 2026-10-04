@@ -227,13 +227,13 @@ class ApiService {
         Uri.parse('$baseUrl/api/auth/register/'),
         headers: _headers,
         body: jsonEncode({
-          'username': username,
-          'email': email,
-          'password': password,
-          'display_name': displayName,
-          'phone_number': phoneNumber,
-          'first_name': firstName,
-          'last_name': lastName,
+          'username': username.trim(),
+          'email': email.trim().toLowerCase(),
+          'password': password.trim(),
+          if (displayName != null && displayName.trim().isNotEmpty) 'display_name': displayName.trim(),
+          if (phoneNumber != null && phoneNumber.trim().isNotEmpty) 'phone_number': phoneNumber.trim(),
+          if (firstName != null && firstName.trim().isNotEmpty) 'first_name': firstName.trim(),
+          if (lastName != null && lastName.trim().isNotEmpty) 'last_name': lastName.trim(),
         }),
       ).timeout(const Duration(seconds: 8));
 

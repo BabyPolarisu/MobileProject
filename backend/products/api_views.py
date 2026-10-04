@@ -177,12 +177,17 @@ def api_register_mobile_device(request):
 # ==========================================
 # 2. Authentication
 # ==========================================
+def _clean_str(val):
+    if val is None:
+        return ''
+    return str(val).strip()
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 def api_login(request):
-    username = request.data.get('username', '').strip()
-    password = request.data.get('password', '').strip()
+    username = _clean_str(request.data.get('username'))
+    password = _clean_str(request.data.get('password'))
 
     user = authenticate(username=username, password=password)
     if user is None:
@@ -206,53 +211,56 @@ def api_login(request):
 @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 def api_register(request):
-    username = request.data.get('username', '').strip()
-    email = request.data.get('email', '').strip().lower()
-    password = request.data.get('password', '').strip()
-    display_name = request.data.get('display_name', '').strip()
-    phone_number = request.data.get('phone_number', '').strip()
-    first_name = request.data.get('first_name', '').strip()
-    last_name = request.data.get('last_name', '').strip()
+    try:
+        username = _clean_str(request.data.get('username'))
+        email = _clean_str(request.data.get('email')).lower()
+        password = _clean_str(request.data.get('password'))
+        display_name = _clean_str(request.data.get('display_name'))
+        phone_number = _clean_str(request.data.get('phone_number'))
+        first_name = _clean_str(request.data.get('first_name'))
+        last_name = _clean_str(request.data.get('last_name'))
 
-    if not username or not password or not email:
-        return Response({'error': 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อผู้ใช้, อีเมล @ubu.ac.th และรหัสผ่าน)'}, status=status.HTTP_400_BAD_REQUEST)
+        if not username or not password or not email:
+            return Response({'error': 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อผู้ใช้, อีเมล @ubu.ac.th และรหัสผ่าน)'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if len(password) < 6:
-        return Response({'error': 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(password) < 6:
+            return Response({'error': 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not email.endswith('@ubu.ac.th'):
-        return Response({'error': 'สงวนสิทธิ์เฉพาะอีเมลมหาวิทยาลัยอุบลราชธานี (@ubu.ac.th) เท่านั้น'}, status=status.HTTP_400_BAD_REQUEST)
+        if not email.endswith('@ubu.ac.th'):
+            return Response({'error': 'สงวนสิทธิ์เฉพาะอีเมลมหาวิทยาลัยอุบลราชธานี (@ubu.ac.th) เท่านั้น'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if User.objects.filter(username__iexact=username).exists():
-        return Response({'error': 'ชื่อผู้ใช้นี้มีคนใช้แล้ว กรุณาเลือกชื่อผู้ใช้อื่น'}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username__iexact=username).exists():
+            return Response({'error': 'ชื่อผู้ใช้นี้มีคนใช้แล้ว กรุณาเลือกชื่อผู้ใช้อื่น'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if User.objects.filter(email__iexact=email).exists():
-        return Response({'error': 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่นหรือเข้าสู่ระบบ'}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(email__iexact=email).exists():
+            return Response({'error': 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่นหรือเข้าสู่ระบบ'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Derive first_name and last_name from display_name if not provided
-    if display_name and not first_name:
-        parts = display_name.split(' ', 1)
-        first_name = parts[0]
-        if len(parts) > 1:
-            last_name = parts[1]
+        # Derive first_name and last_name from display_name if not provided
+        if display_name and not first_name:
+            parts = display_name.split(' ', 1)
+            first_name = parts[0]
+            if len(parts) > 1:
+                last_name = parts[1]
 
-    user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
-        first_name=first_name,
-        last_name=last_name
-    )
-    profile, _ = UserProfile.objects.get_or_create(user=user)
-    profile.display_name = display_name if display_name else (f"{first_name} {last_name}".strip() or username)
-    if phone_number:
-        profile.phone_number = phone_number
-    profile.save()
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.display_name = display_name if display_name else (f"{first_name} {last_name}".strip() or username)
+        if phone_number:
+            profile.phone_number = phone_number
+        profile.save()
 
-    return Response({
-        'message': 'สมัครสมาชิกสำเร็จ ยินดีต้อนรับสู่ UniMarket UBU',
-        'user': user_to_dict(user),
-    }, status=status.HTTP_201_CREATED)
+        return Response({
+            'message': 'สมัครสมาชิกสำเร็จ ยินดีต้อนรับสู่ UniMarket UBU',
+            'user': user_to_dict(user),
+        }, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'error': f'เกิดข้อผิดพลาดในการลงทะเบียน: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
