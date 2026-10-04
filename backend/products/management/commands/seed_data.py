@@ -180,12 +180,16 @@ class Command(BaseCommand):
         oidc_client.require_consent = True
         oidc_client.reuse_consent = False
         oidc_client._scope = "openid profile email"
-        oidc_client.redirect_uris = [
-            "http://localhost:50000/callback",
-            "http://127.0.0.1:50000/callback",
+        oidc_client._redirect_uris = "\n".join([
+            "http://localhost:50000/",
             "http://localhost:50000",
+            "http://127.0.0.1:50000/",
             "http://127.0.0.1:50000",
-        ]
+            "http://localhost:50000/callback",
+            "http://localhost:50000/callback/",
+            "http://127.0.0.1:50000/callback",
+            "http://127.0.0.1:50000/callback/",
+        ])
         oidc_client.post_logout_redirect_uris = [
             "http://localhost:50000/",
             "http://127.0.0.1:50000/",
