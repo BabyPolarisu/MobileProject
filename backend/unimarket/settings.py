@@ -277,6 +277,7 @@ CORS_ALLOW_HEADERS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'products.authentication.OidcTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
@@ -289,8 +290,11 @@ REST_FRAMEWORK = {
 OIDC_USERINFO = 'products.oidc_provider_settings.userinfo'
 OIDC_EXTRA_SCOPE_CLAIMS = 'products.oidc_provider_settings.CustomScopeClaims'
 OIDC_SESSION_MANAGEMENT_ENABLE = True
+OIDC_GRANT_TYPE_PASSWORD_ENABLE = True
 LOGIN_URL = '/accounts/login/'
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:50000',
     'http://127.0.0.1:50000',

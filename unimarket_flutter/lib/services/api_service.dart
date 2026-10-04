@@ -14,7 +14,7 @@ class ApiService {
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    if (authToken != null) 'Authorization': 'Token $authToken',
+    if (authToken != null) 'Authorization': 'Bearer $authToken',
   };
 
   /// Check whether the Django backend server is online

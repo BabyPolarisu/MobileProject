@@ -1,9 +1,8 @@
-# 🎓 UniMarket — ตลาดนัดออนไลน์มหาวิทยาลัย (Full-Stack Flutter + Django OIDC)
+# UniMarket — ตลาดนัดออนไลน์มหาวิทยาลัย (Full-Stack Flutter + Django OIDC)
 
 > **วิชา:** Mobile Application Development  
 > **อาจารย์ผู้สอน:** ดร.วิชิต สมบัติ (Wichit Sombat)  
 > **ผู้พัฒนา:** Kitthanakorn Chueaprathum (66114540047)  
-> **Branch สำหรับส่งงาน:** `project`
 
 UniMarket คือแพลตฟอร์มตลาดนัดออนไลน์สำหรับนักศึกษาและบุคลากรมหาวิทยาลัยอุบลราชธานี เพื่อแก้ปัญหาการซื้อขายและส่งต่อสิ่งของในมหาวิทยาลัย เช่น หนังสือเรียน อุปกรณ์การเรียน เครื่องแต่งกาย และของใช้ในหอพัก ให้เป็นไปอย่างสะดวก ปลอดภัย และยืนยันตัวตนได้จริง โดยเชื่อมต่อระบบยืนยันตัวตนมาตรฐาน **OpenID Connect (OIDC)** ผ่าน Django OIDC Server ร่วมกับแอปพลิเคชันมือถือและเว็บที่พัฒนาด้วย **Flutter (MVVM Architecture)**
 
@@ -95,29 +94,3 @@ flutter run -d chrome --web-port 50000
 | **นักศึกษา 2** | `thanaporn_k` | `thanaporn1234` | ซื้อ/ลงขายสินค้า แชทสนทนากับนักศึกษา 1 |
 
 *(ในหน้า Login Screen มีปุ่ม Quick Select สำหรับคลิกเลือก Demo Account เพื่อความรวดเร็วในการตรวจงานและบันทึกคลิปวิดีโอ)*
-
----
-
-## 📸 Screenshots
-
-| 1. Marketplace & Multi-Platform | 2. OIDC Authentication & Dark Mode |
-|:---:|:---:|
-| ![Marketplace](docs/screenshots/unimarket_app.jpg) | ![OIDC & Dark Mode](docs/screenshots/unimarket_auth_dark.jpg) |
-| ตลาดสินค้า ค้นหา กรองหมวดหมู่ และรายละเอียด | หน้าเข้าสู่ระบบ OIDC, Route Guard และโหมดมืด (Dark Mode) |
-
----
-
-## 🎬 Demo Video
-
-* **ลิงก์วิดีโอสาธิต (YouTube Unlisted):** [คลิกที่นี่เพื่อรับชมวิดีโอสาธิตการทำงานของระบบ](https://youtu.be/placeholder-demo-video) *(กรุณาวางลิงก์คลิป Unlisted ที่นี่)*
-
-### ⏱️ โครงสร้างเนื้อหาวิดีโอตาม Storyboard (5–8 นาที)
-1. **0:00–0:30 (แนะนำตัว + Repository):** แนะนำชื่อโปรเจกต์ สมาชิกผู้จัดทำ เปิดหน้า GitHub ตรวจสอบคำสั่ง `git branch --show-current` เป็น `project` และเปิดดู README สั้นๆ
-2. **0:30–2:30 (Zero-Error Setup):** โคลนโปรเจกต์ลงในโฟลเดอร์ใหม่ แล้วพิมพ์คำสั่งรันตามลำดับใน README สดๆ (Terminal 1 Backend ด้วย `uv` ➔ Terminal 2 Flutter Chrome `--web-port 50000`) จนแอปพลิเคชันเปิดขึ้นมาได้สำเร็จโดยไม่มี error
-3. **2:30–3:30 (OIDC Authentication):** กดปุ่มเข้าสู่ระบบ OIDC แสดง Route Guard ปกป้องหน้าจอ เลือกล็อกอินด้วยบัญชีทดสอบ `somchai_ubu` แสดงผลชื่อและโปรไฟล์ผู้ใช้ รีเฟรช/ปิดเปิดเบราว์เซอร์ใหม่ยังคงเซสชันเดิม และกด Logout ล้างเซสชันจริง
-4. **3:30–5:30 (Main Functions CRUD & Error Handling):**
-   * **Create:** ลงขายสินค้าใหม่ กรอกฟอร์มพร้อม validation
-   * **Read:** แสดงรายการในหน้าแรก และเปิดดูรายละเอียด
-   * **Update & Delete:** แก้ไขข้อมูลสินค้าใน My Listings และลบสินค้าจริง
-   * **Error Handling:** ทดลองหยุดการทำงานของ Backend แล้วแสดงข้อความแจ้งเตือน SnackBar อย่างสุภาพ
-5. **5:30–จบ (Extra Features & สรุป):** แสดงการเปิด-ปิด Dark Mode สลับธีมแบบทันที, การกรองค้นหา และสรุปความรู้ที่ได้รับจากโปรเจกต์

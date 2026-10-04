@@ -229,7 +229,7 @@ class _PresentationHelperDialogState extends State<PresentationHelperDialog> wit
         'name': 'สมชาย เรียนดี (somchai_ubu)',
         'role': 'นักศึกษาทั่วไป / ผู้ซื้อ / ผู้ลงขายเสื้อช็อป & กีตาร์',
         'badge': 'นักศึกษายืนยันแล้ว ✅',
-        'password': 'password123 หรือ somchai1234',
+        'password': 'somchai1234',
         'isCurrent': state.currentUser.username == 'somchai_ubu',
       },
       {
@@ -237,7 +237,7 @@ class _PresentationHelperDialogState extends State<PresentationHelperDialog> wit
         'name': 'ธนพร สายช้อป (thanaporn_k)',
         'role': 'ผู้ขายยอดนิยม / เจ้าของ iPad & หนังสือ Calculus / เรตติ้ง 5.0 ⭐',
         'badge': 'ผู้ขายดีเด่น 🏆',
-        'password': 'password123 หรือ thanaporn1234',
+        'password': 'thanaporn1234',
         'isCurrent': state.currentUser.username == 'thanaporn_k',
       },
       {
@@ -245,7 +245,7 @@ class _PresentationHelperDialogState extends State<PresentationHelperDialog> wit
         'name': 'ผู้ดูแลระบบ (admin)',
         'role': 'Superuser / จัดการและอนุมัติสินค้า / ตรวจสอบบัตรนักศึกษา / แดชบอร์ดแอดมิน',
         'badge': 'Admin Moderation 🛡️',
-        'password': 'admin หรือ admin1234',
+        'password': 'admin1234',
         'isCurrent': state.currentUser.isAdmin,
       },
     ];

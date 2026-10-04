@@ -27,17 +27,28 @@ class UserModel {
       displayName.isNotEmpty ? displayName : username;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    int parsedId = 0;
+    if (json['id'] != null) {
+      parsedId = json['id'] is int ? json['id'] : (int.tryParse(json['id'].toString()) ?? 0);
+    } else if (json['sub'] != null) {
+      parsedId = int.tryParse(json['sub'].toString()) ?? 0;
+    }
+
+    final username = json['username'] ?? json['preferred_username'] ?? json['nickname'] ?? '';
+    final displayName = json['display_name'] ?? json['name'] ?? username;
+    final avatar = json['avatar'] ?? json['picture'] ?? json['avatar_url'] ?? '';
+
     return UserModel(
-      id: json['id'] ?? 0,
-      username: json['username'] ?? '',
+      id: parsedId,
+      username: username,
       email: json['email'] ?? '',
-      displayName: json['display_name'] ?? json['username'] ?? '',
-      avatarUrl: json['avatar'] ?? '',
-      phoneNumber: json['phone_number'] ?? '',
-      address: json['address'] ?? '',
-      bio: json['bio'] ?? '',
-      isVerified: json['is_verified'] ?? false,
-      isAdmin: json['is_staff'] ?? json['is_admin'] ?? false,
+      displayName: displayName.toString().isNotEmpty ? displayName.toString() : username.toString(),
+      avatarUrl: avatar.toString(),
+      phoneNumber: json['phone_number']?.toString() ?? '',
+      address: json['address']?.toString() ?? '',
+      bio: json['bio']?.toString() ?? '',
+      isVerified: json['is_verified'] == true || json['verified'] == true,
+      isAdmin: json['is_staff'] == true || json['is_admin'] == true || json['is_superuser'] == true,
     );
   }
 
