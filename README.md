@@ -97,17 +97,6 @@ flutter run -d chrome --web-port 50000
 
 *(หรือสามารถกด **สมัครสมาชิกใหม่** ด้วยอีเมล `@ubu.ac.th` ได้จริงจากหน้า Login ของแอป)*
 
----
-
-## 📱 Screenshots (ภาพหน้าจอสำคัญ)
-
-| หน้าแรกตลาดสินค้า (Marketplace Feed) | หน้าเข้าสู่ระบบ & OIDC Provider |
-| :---: | :---: |
-| ![UniMarket App](docs/screenshots/unimarket_app.jpg) | ![UniMarket Auth](docs/screenshots/unimarket_auth_dark.jpg) |
-
----
-
 ## 🎬 Demo Video
 
 > 🔗 **YouTube Link (Unlisted):** [https://youtu.be/YOUR_DEMO_VIDEO_LINK](https://youtu.be/YOUR_DEMO_VIDEO_LINK)  
-> *(อัปโหลดเป็นแบบ **Unlisted** บน YouTube พร้อมเสียงบรรยายครบ 5 ช่วงตาม Storyboard สัปดาห์ที่ 16)*
