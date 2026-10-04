@@ -61,7 +61,62 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         onChanged: (val) => state.setSearchQuery(val),
                       ),
-                      const SizedBox(height: 16),
+                      if (!state.isConnectedToBackend) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF451A03)
+                                : Colors.amber.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFFB45309)
+                                  : Colors.amber.shade300,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.cloud_off_rounded, size: 20, color: Color(0xFFD97706)),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  state.isSimulatedOffline
+                                      ? 'โหมดจำลองออฟไลน์: กำลังแสดงข้อมูลแคชในเครื่อง (ระบบจัดการ Error Handling ทำงานสมบูรณ์)'
+                                      : 'โหมดออฟไลน์: ไม่สามารถติดต่อ Django Backend (Port 8000) ได้ กำลังแสดงข้อมูลแคชในเครื่อง',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? const Color(0xFFFDE68A)
+                                        : const Color(0xFF92400E),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () => state.checkBackendConnection(),
+                                child: Text(
+                                  'ลองใหม่',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? const Color(0xFFFDE68A)
+                                        : const Color(0xFFB45309),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
 
                       // Hero Banner
                       Container(

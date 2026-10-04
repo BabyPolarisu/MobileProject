@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/app_state.dart';
 import '../../core/theme.dart';
+import 'presentation_helper_dialog.dart';
 
 class RoleSwitchBanner extends StatelessWidget {
   const RoleSwitchBanner({super.key});
@@ -13,7 +14,7 @@ class RoleSwitchBanner extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       color: isDark
           ? (isAdmin ? const Color(0xFF451A03) : const Color(0xFF0F172A))
           : (isAdmin ? const Color(0xFFFEF3C7) : const Color(0xFFEFF6FF)),
@@ -28,8 +29,8 @@ class RoleSwitchBanner extends StatelessWidget {
           Expanded(
             child: Text(
               isAdmin
-                  ? 'โหมดผู้ดูแลระบบ: ${state.currentUser.effectiveName} (สามารถอนุมัติ/ลบสินค้าได้)'
-                  : 'โหมดนักศึกษา: ${state.currentUser.effectiveName}',
+                  ? 'ผู้ดูแลระบบ: ${state.currentUser.effectiveName} (อนุมัติ/ลบสินค้าได้)'
+                  : 'นักศึกษา: ${state.currentUser.effectiveName}',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -42,8 +43,32 @@ class RoleSwitchBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
+
+          // Django Backend Connection Pill
           InkWell(
-            onTap: () => state.checkBackendConnection(),
+            onTap: () async {
+              final online = await state.checkBackendConnection();
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    online
+                        ? '✅ เชื่อมต่อกับ Django Backend (Port 8000) สำเร็จแล้ว — ซิงค์ข้อมูลล่าสุดเรียบร้อย'
+                        : '⚠️ ไม่สามารถเชื่อมต่อกับ Django Backend (Port 8000) ได้ — ระบบกำลังทำงานในโหมดแคชออฟไลน์ (Offline Mode)',
+                  ),
+                  backgroundColor: online ? AppTheme.success : AppTheme.warning,
+                  duration: const Duration(seconds: 4),
+                  action: online
+                      ? null
+                      : SnackBarAction(
+                          label: 'ลองใหม่',
+                          textColor: Colors.white,
+                          onPressed: () => state.checkBackendConnection(),
+                        ),
+                ),
+              );
+            },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -67,7 +92,9 @@ class RoleSwitchBanner extends StatelessWidget {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    state.isConnectedToBackend ? 'Django Online' : 'Django Offline',
+                    state.isConnectedToBackend
+                        ? 'Django Online'
+                        : (state.isSimulatedOffline ? 'Simulated Offline' : 'Django Offline'),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -85,16 +112,37 @@ class RoleSwitchBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
+
+          // Presentation Assistant / Demo Helper Button
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              side: BorderSide(
+                color: isDark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1),
+              ),
+            ),
+            icon: const Icon(Icons.slideshow_rounded, size: 15, color: AppTheme.primaryLight),
+            label: const Text(
+              '🎬 คู่มือนำเสนอ',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+            ),
+            onPressed: () => PresentationHelperDialog.show(context),
+          ),
+          const SizedBox(width: 8),
+
+          // Switch User Role Quick Button
           TextButton.icon(
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             icon: const Icon(Icons.swap_horiz, size: 16),
             label: Text(
               isAdmin ? 'สลับเป็นนักศึกษา' : 'สลับเป็นแอดมิน',
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 11),
             ),
             onPressed: () => state.switchUserRole(!isAdmin),
           ),

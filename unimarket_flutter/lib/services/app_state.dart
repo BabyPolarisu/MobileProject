@@ -46,6 +46,7 @@ class AppState extends ChangeNotifier {
 
   // Backend connection status
   bool isConnectedToBackend = false;
+  bool isSimulatedOffline = false;
 
   AppState() {
     _initSeedData();
@@ -81,6 +82,16 @@ class AppState extends ChangeNotifier {
     } catch (_) {}
   }
 
+  void toggleSimulatedOffline() {
+    isSimulatedOffline = !isSimulatedOffline;
+    if (isSimulatedOffline) {
+      isConnectedToBackend = false;
+      notifyListeners();
+    } else {
+      checkBackendConnection();
+    }
+  }
+
   Future<bool> loginWithOidc(String username, String password) async {
     final user = await oidcService.login(username: username, password: password);
     if (user != null) {
@@ -101,7 +112,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> checkBackendConnection() async {
+  Future<bool> checkBackendConnection() async {
+    if (isSimulatedOffline) {
+      isConnectedToBackend = false;
+      notifyListeners();
+      return false;
+    }
     final online = await apiService.checkServerHealth();
     isConnectedToBackend = online;
     if (online) {
@@ -121,6 +137,7 @@ class AppState extends ChangeNotifier {
       } catch (_) {}
     }
     notifyListeners();
+    return online;
   }
 
 
@@ -173,8 +190,128 @@ class AppState extends ChangeNotifier {
       code: e['code']!,
     )).toList();
 
-    // 3. Products
-    products = [];
+    // 3. Products (Offline/Initial seed cache matching Django DB)
+    final catBooks = categories.firstWhere((c) => c.code == 'books', orElse: () => categories[0]);
+    final catElectronics = categories.firstWhere((c) => c.code == 'electronics', orElse: () => categories[1]);
+    final catClothing = categories.firstWhere((c) => c.code == 'clothing', orElse: () => categories[2]);
+    final catStationary = categories.firstWhere((c) => c.code == 'stationary', orElse: () => categories[6]);
+    final catDorm = categories.firstWhere((c) => c.code == 'dorm', orElse: () => categories[5]);
+    final catSports = categories.firstWhere((c) => c.code == 'sports', orElse: () => categories[7]);
+
+    products = [
+      ProductModel(
+        id: 1,
+        name: 'หนังสือ Calculus 1 สำหรับวิศวะและวิทยาศาสตร์',
+        description: 'สภาพ 95% ไร้รอยขีดเขียน ไฮไลท์เฉพาะบทแรกๆ เหมาะสำหรับน้องปี 1 อ่านเตรียมสอบกลางภาค นัดรับในมอได้ครับ',
+        price: 180.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop',
+        category: catBooks,
+        seller: otherSellerUser,
+        status: 'active',
+        favoritesCount: 5,
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 3)),
+      ),
+      ProductModel(
+        id: 2,
+        name: 'iPad Air 4 64GB WiFi สี Space Grey',
+        description: 'เครื่องศูนย์ไทย อุปกรณ์ครบกล่อง สภาพสวย ไม่มีรอยตกหล่น แบตเตอรี่ 88% แถมเคสและฟิล์มกระจกติดแล้ว',
+        price: 11500.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&auto=format&fit=crop',
+        category: catElectronics,
+        seller: otherSellerUser,
+        status: 'active',
+        favoritesCount: 12,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ProductModel(
+        id: 3,
+        name: 'เสื้อช็อปวิศวะ ม.อุบล ไซส์ L สภาพดี',
+        description: 'เสื้อช็อปสีกรมท่า ไซส์ L รอบอก 42 นิ้ว ผ้าหนาทนทาน ซักเก็บอย่างดี ไม่มีรอยขาด ใส่เรียนช็อปสบาย',
+        price: 250.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&auto=format&fit=crop',
+        category: catClothing,
+        seller: currentUser,
+        status: 'active',
+        favoritesCount: 3,
+        createdAt: DateTime.now().subtract(const Duration(days: 5)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+      ProductModel(
+        id: 4,
+        name: 'เครื่องคิดเลขวิทยาศาสตร์ Casio fx-991EX',
+        description: 'รุ่นยอดนิยมสำหรับสอบวิศวะและวิทยาศาสตร์ หน้าจอความละเอียดสูง ฟังก์ชันครบ ใช้งานได้ปกติทุกปุ่ม พร้อมฝาครอบสไลด์',
+        price: 590.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&auto=format&fit=crop',
+        category: catStationary,
+        seller: currentUser,
+        status: 'active',
+        favoritesCount: 7,
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      ProductModel(
+        id: 5,
+        name: 'พัดลมตั้งโต๊ะ Hatari 16 นิ้ว ลมแรงประหยัดไฟ',
+        description: 'พัดลมตั้งโต๊ะสีเขียวมิ้นท์ ปรับแรงลมได้ 3 ระดับ สภาพ 90% ใช้งานดีเงียบ ประหยัดไฟเบอร์ 5 นัดรับได้ที่หอพัก',
+        price: 320.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=600&auto=format&fit=crop',
+        category: catDorm,
+        seller: otherSellerUser,
+        status: 'active',
+        favoritesCount: 2,
+        createdAt: DateTime.now().subtract(const Duration(days: 4)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 4)),
+      ),
+      ProductModel(
+        id: 6,
+        name: 'กีตาร์โปร่ง Yamaha F310 พร้อมกระเป๋าใส่',
+        description: 'กีตาร์โปร่งยอดนิยม เสียงใสกังวาน เหมาะสำหรับผู้เริ่มต้นและซ้อมเพลงในหอ สภาพ 95% เปลี่ยนสาย ใหม่พร้อมเล่น',
+        price: 2800.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&auto=format&fit=crop',
+        category: catDorm,
+        seller: currentUser,
+        status: 'active',
+        favoritesCount: 8,
+        createdAt: DateTime.now().subtract(const Duration(days: 6)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 6)),
+      ),
+      ProductModel(
+        id: 7,
+        name: 'ไม้แบดมินตัน Yonex พร้อมลูกแบด 1 หลอด',
+        description: 'ไม้แบดมินตันน้ำหนักเบา กริปสภาพดี เอ็นตึง 24 ปอนด์ พร้อมซองและลูกขนไก่ RSL 1 หลอด',
+        price: 450.0,
+        condition: 'used',
+        imageUrl: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=600&auto=format&fit=crop',
+        category: catSports,
+        seller: otherSellerUser,
+        status: 'active',
+        favoritesCount: 4,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ProductModel(
+        id: 8,
+        name: 'โคมไฟอ่านหนังสือ LED ถนอมสายตา ปรับแสงได้ 3 ระดับ',
+        description: 'โคมไฟตั้งโต๊ะทำงาน ชาร์จ USB พับเก็บได้ แสงนุ่มนวลไม่แสบตา ปรับอุณหภูมิสีได้ 3 แบบ เหมาะกับอ่านหนังสือสอบ',
+        price: 190.0,
+        condition: 'new',
+        imageUrl: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop',
+        category: catStationary,
+        seller: currentUser,
+        status: 'active',
+        favoritesCount: 9,
+        createdAt: DateTime.now().subtract(const Duration(hours: 12)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 12)),
+      ),
+    ];
 
     // 4. Chat Rooms & Messages
     final room1 = ChatRoomModel(
@@ -317,10 +454,12 @@ class AppState extends ChangeNotifier {
     ];
   }
 
-  // --- Switch User Role (Student <-> Admin for easy testing) ---
-  void switchUserRole(bool toAdmin) {
-    if (toAdmin) {
+  // --- Switch User (Student / Seller / Admin for easy testing) ---
+  void switchUser(String username) {
+    if (username == 'admin') {
       currentUser = adminUser;
+    } else if (username == 'thanaporn_k') {
+      currentUser = otherSellerUser;
     } else {
       currentUser = UserModel(
         id: 1,
@@ -336,6 +475,10 @@ class AppState extends ChangeNotifier {
       );
     }
     notifyListeners();
+  }
+
+  void switchUserRole(bool toAdmin) {
+    switchUser(toAdmin ? 'admin' : 'somchai_ubu');
   }
 
   // --- Filtering Products ---
