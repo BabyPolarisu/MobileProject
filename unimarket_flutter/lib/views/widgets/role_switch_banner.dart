@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/app_state.dart';
 import '../../core/theme.dart';
-import 'presentation_helper_dialog.dart';
 
 class RoleSwitchBanner extends StatelessWidget {
   const RoleSwitchBanner({super.key});
@@ -113,24 +112,7 @@ class RoleSwitchBanner extends StatelessWidget {
           ),
           const SizedBox(width: 8),
 
-          // Presentation Assistant / Demo Helper Button
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              side: BorderSide(
-                color: isDark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1),
-              ),
-            ),
-            icon: const Icon(Icons.slideshow_rounded, size: 15, color: AppTheme.primaryLight),
-            label: const Text(
-              '🎬 คู่มือนำเสนอ',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () => PresentationHelperDialog.show(context),
-          ),
-          const SizedBox(width: 8),
+
 
           // Switch User Role Quick Button
           TextButton.icon(
